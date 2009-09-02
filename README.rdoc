@@ -1,0 +1,33 @@
+= Erbal: Very small, very fast Ragel/C based ERB parser
+
+== Intro
+
+Erbal is a lightweight ERB parser based on the [Ragel State Machine Compiler](http://www.complang.org/ragel/) and written in C. It's very fast.
+
+Please note that Erbal isn't intended as a full replacement for the ERB implementation that ships with Ruby. Erbal only implements parsing of the following tags:
+
+  <%, <%=, -%>, %>
+  
+This is to keep Erbal very simple and very fast. If there's a good case for implementing more features from ERB and it doesn't impact performance or add much complexity then I'll consider it. Personally I've never needed anything more.
+
+== Using Erbal
+
+  require 'erbal'
+  e = Erbal.new("<% a=1 -%> a is: <%= a -%>", "@output_buffer")
+  src = e.parse
+  eval(src)
+  
+== Rails
+
+In your after_initialize block in config/environment.rb add:
+
+  require 'erbal/rails'
+  ActionView::Template.register_template_handler :erb, ErbalTemplateHandler
+
+== Benchmarks
+
+Coming soon.
+
+== Credits
+
+Many thanks to Adrian Thurston for writing the [Ragel State Machine Compiler](http://www.complang.org/ragel/)!
