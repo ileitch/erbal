@@ -4,12 +4,12 @@
 #include "ruby.h"
 
 typedef struct erbal_parser {
-  const char *buf[1000];
-  int output, open, mark, offset;
+  int output, open, mark, comment;
   VALUE str, src, buffer;
 } erbal_parser;
 
 inline void erbal_parser_tag_open(erbal_parser*);
+inline void erbal_parser_tag_open_with_comment(erbal_parser*);
 inline void erbal_parser_tag_open_with_output(erbal_parser*);
 inline void erbal_parser_any(erbal_parser*);
 inline void erbal_parser_tag_close(erbal_parser*);

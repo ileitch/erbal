@@ -6,6 +6,7 @@
 
   main := |*
     '<%'  => { erbal_parser_tag_open(parser); };
+    '<%#'  => { erbal_parser_tag_open_with_comment(parser); };
     '<%=' => { erbal_parser_tag_open_with_output(parser); };
     any   => { erbal_parser_any(parser); };
     '-%>' => { erbal_parser_tag_close_with_trim(parser); };
@@ -33,7 +34,16 @@ inline void erbal_parser_tag_open_with_output(erbal_parser *parser) {
   rb_str_cat(parser->src, ".concat((", 9);
 }
 
+inline void erbal_parser_tag_open_with_comment(erbal_parser *parser) {
+  erbal_parser_tag_open(parser);
+  parser->comment = 1;
+}
+
 inline void erbal_parser_any(erbal_parser *parser) {
+  if (parser->comment) {
+    return;
+  }
+
   if (parser->open) {
     rb_str_cat(parser->src, p, 1);
   } else {
@@ -62,9 +72,10 @@ inline void erbal_parser_tag_close(erbal_parser *parser) {
   if (parser->output) {
     parser->output = 0;
     rb_str_cat(parser->src, ").to_s);", 8);
-  } else {
+  } else if (!parser->comment) {
     rb_str_cat(parser->src, ";", 1);
   }
+  parser->comment = 0;
 }
 
 inline void erbal_parser_finish(erbal_parser *parser) {
@@ -78,7 +89,7 @@ void erbal_parser_init(erbal_parser *parser) {
   parser->mark = 0;
   parser->open = 0;
   parser->output = 0;
-  parser->offset = 0;
+  parser->comment = 0;
   parser->src = rb_str_dup(parser->buffer);
   rb_str_cat(parser->src, "=\"\";", 4);
   %% write init;

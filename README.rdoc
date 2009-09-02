@@ -6,7 +6,7 @@ Erbal is a lightweight ERB parser based on the [Ragel State Machine Compiler](ht
 
 Please note that Erbal isn't intended as a full replacement for the ERB implementation that ships with Ruby. Erbal only implements parsing of the following tags:
 
-  <%, <%=, -%>, %>
+  <%, <%=, <%#, -%>, %>
   
 This is to keep Erbal very simple and very fast. If there's a good case for implementing more features from ERB and it doesn't impact performance or add much complexity then I'll consider it. Personally I've never needed anything more.
 

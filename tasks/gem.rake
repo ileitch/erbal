@@ -17,7 +17,7 @@ spec = Gem::Specification.new do |s|
   s.homepage              = 'http://github.com/ileitch/erbal'
   s.has_rdoc              = false
 
-  s.files                 = %w(COPYING CHANGELOG README Rakefile) +
+  s.files                 = %w(COPYING CHANGELOG README.rdoc Rakefile) +
                             Dir.glob("{lib,spec,tasks}/**/*") + 
                             Dir.glob("ext/**/*.{h,c,rb,rl}")
   

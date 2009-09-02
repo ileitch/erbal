@@ -38,5 +38,5 @@ task :ragel do
 end
   
 desc "Compile the extensions"
-task :compile
+task :compile => :ragel
 task :package => :compile
