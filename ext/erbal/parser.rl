@@ -23,7 +23,7 @@ inline void erbal_parser_tag_open(erbal_parser *parser) {
   parser->open = 1;
   if (parser->mark) {
     parser->mark = 0;
-    rb_str_cat(parser->src, "\");", 3);
+    rb_str_buf_cat(parser->src, "\");", 3);
   }
 }
 
@@ -31,7 +31,7 @@ inline void erbal_parser_tag_open_with_output(erbal_parser *parser) {
   erbal_parser_tag_open(parser);
   parser->output = 1;
   rb_str_concat(parser->src, parser->buffer);
-  rb_str_cat(parser->src, ".concat((", 9);
+  rb_str_buf_cat(parser->src, ".concat((", 9);
 }
 
 inline void erbal_parser_tag_open_with_comment(erbal_parser *parser) {
@@ -45,17 +45,17 @@ inline void erbal_parser_any(erbal_parser *parser) {
   }
 
   if (parser->open) {
-    rb_str_cat(parser->src, p, 1);
+    rb_str_buf_cat(parser->src, p, 1);
   } else {
     if (!parser->mark) {
       parser->mark = 1;
       rb_str_concat(parser->src, parser->buffer);
-      rb_str_cat(parser->src, ".concat(\"", 9);
+      rb_str_buf_cat(parser->src, ".concat(\"", 9);
     }
     if (p[0] == '"') {
       rb_str_cat(parser->src, "\\\"", 2);
     } else {
-      rb_str_cat(parser->src, p, 1);
+      rb_str_buf_cat(parser->src, p, 1);
     }
   }
 }
@@ -71,16 +71,16 @@ inline void erbal_parser_tag_close(erbal_parser *parser) {
   parser->open = 0;
   if (parser->output) {
     parser->output = 0;
-    rb_str_cat(parser->src, ").to_s);", 8);
+    rb_str_buf_cat(parser->src, ").to_s);", 8);
   } else if (!parser->comment) {
-    rb_str_cat(parser->src, ";", 1);
+    rb_str_buf_cat(parser->src, ";", 1);
   }
   parser->comment = 0;
 }
 
 inline void erbal_parser_finish(erbal_parser *parser) {
   if (parser->mark) {
-    rb_str_cat(parser->src, "\");", 3);
+    rb_str_buf_cat(parser->src, "\");", 3);
   }
   rb_str_concat(parser->src, parser->buffer);
 }
@@ -91,7 +91,7 @@ void erbal_parser_init(erbal_parser *parser) {
   parser->output = 0;
   parser->comment = 0;
   parser->src = rb_str_dup(parser->buffer);
-  rb_str_cat(parser->src, "=\"\";", 4);
+  rb_str_buf_cat(parser->src, "=\"\";", 4);
   %% write init;
 }
 
