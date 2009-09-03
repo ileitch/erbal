@@ -1,7 +1,7 @@
 --- !ruby/object:Gem::Specification 
 name: erbal
 version: !ruby/object:Gem::Version 
-  version: 0.0.1
+  version: 0.0.2
 platform: ruby
 authors: 
 - Ian Leitch
@@ -13,7 +13,7 @@ date: 2009-09-02 00:00:00 -04:00
 default_executable: 
 dependencies: []
 
-description: Very small, very fast Ragel based ERB parser
+description: Very small, very fast Ragel/C based ERB parser
 email: ian.leitch@systino.net
 executables: []
 
@@ -24,13 +24,15 @@ extra_rdoc_files: []
 files: 
 - COPYING
 - CHANGELOG
-- README
+- README.rdoc
 - Rakefile
 - lib/erbal
 - lib/erbal/rails.rb
 - tasks/ext.rake
 - tasks/gem.rake
 - tasks/spec.rake
+- benchmark/bench.rb
+- benchmark/sample.erb
 - ext/erbal/parser.h
 - ext/erbal/erbal.c
 - ext/erbal/parser.c
@@ -63,6 +65,6 @@ rubyforge_project:
 rubygems_version: 1.3.4
 signing_key: 
 specification_version: 3
-summary: Very small, very fast Ragel based ERB parser
+summary: Very small, very fast Ragel/C based ERB parser
 test_files: []
 

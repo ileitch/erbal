@@ -53,7 +53,7 @@ inline void erbal_parser_any(erbal_parser *parser) {
       rb_str_buf_cat(parser->src, ".concat(\"", 9);
     }
     if (p[0] == '"') {
-      rb_str_cat(parser->src, "\\\"", 2);
+      rb_str_buf_cat(parser->src, "\\\"", 2);
     } else {
       rb_str_buf_cat(parser->src, p, 1);
     }

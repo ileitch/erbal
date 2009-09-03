@@ -2,7 +2,7 @@
 
 == Intro
 
-Erbal is a lightweight ERB parser based on the [Ragel State Machine Compiler](http://www.complang.org/ragel/) and written in C. It's very fast.
+Erbal is a lightweight ERB parser based on the Ragel State Machine Compiler (http://www.complang.org/ragel/) and written in C. It's very fast.
 
 Please note that Erbal isn't intended as a full replacement for the ERB implementation that ships with Ruby. Erbal only implements parsing of the following tags:
 
@@ -26,8 +26,48 @@ In your after_initialize block in config/environment.rb add:
 
 == Benchmarks
 
-Coming soon.
+This benchmark was performed on a MacBook Pro with a 2.4Ghz Intel Core 2 Duo and 4GB 667Mhz DDR2 SDRAM. Running Mac OS X 10.6 (Snow Leopard). The code to run it is located in benchmark/bench.rb
+
+Summary:
+
+Erbal is 14.6x faster than Ruby's ERB and 7.5x faster than Erubis.
+
+Details:
+
+Ruby: 1.8.7 (2009-06-12 patchlevel 174) [i686-darwin10]
+Erubis: 2.6.5 using Erubis::FastEruby.
+Erbal: 0.0.2
+
+  => Warming up.... done
+  => 10000 runs repeated 6 times
+
+  => Erb:
+   1) 13.01
+   2) 13.00
+   3) 13.01
+   4) 13.04
+   5) 13.13
+   6) 13.23
+  => Average: 13.07
+  
+  => Erbal:
+   1) 0.90
+   2) 0.89
+   3) 0.89
+   4) 0.90
+   5) 0.89
+   6) 0.89
+  => Average: 0.89
+  
+  => Erubis:
+   1) 6.63
+   2) 6.67
+   3) 6.69
+   4) 6.71
+   5) 6.72
+   6) 6.75
+  => Average: 6.70
 
 == Credits
 
-Many thanks to Adrian Thurston for writing the [Ragel State Machine Compiler](http://www.complang.org/ragel/)!
+Many thanks to Adrian Thurston for writing the Ragel State Machine Compiler (http://www.complang.org/ragel/)!
