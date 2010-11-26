@@ -21,8 +21,8 @@ static int act, cs;
 
 inline void erbal_parser_tag_open(erbal_parser *parser) {
   parser->open = 1;
-  if (parser->mark) {
-    parser->mark = 0;
+  if (parser->concat) {
+    parser->concat = 0;
     rb_str_buf_cat(parser->src, "\");", 3);
   }
 }
@@ -47,8 +47,8 @@ inline void erbal_parser_any(erbal_parser *parser) {
   if (parser->open) {
     rb_str_buf_cat(parser->src, p, 1);
   } else {
-    if (!parser->mark) {
-      parser->mark = 1;
+    if (!parser->concat) {
+      parser->concat = 1;
       rb_str_concat(parser->src, parser->buffer);
       rb_str_buf_cat(parser->src, ".concat(\"", 9);
     }
@@ -79,14 +79,14 @@ inline void erbal_parser_tag_close(erbal_parser *parser) {
 }
 
 inline void erbal_parser_finish(erbal_parser *parser) {
-  if (parser->mark) {
+  if (parser->concat) {
     rb_str_buf_cat(parser->src, "\");", 3);
   }
   rb_str_concat(parser->src, parser->buffer);
 }
 
 void erbal_parser_init(erbal_parser *parser) {
-  parser->mark = 0;
+  parser->concat = 0;
   parser->open = 0;
   parser->output = 0;
   parser->comment = 0;

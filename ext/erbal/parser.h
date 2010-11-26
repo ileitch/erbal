@@ -4,7 +4,7 @@
 #include "ruby.h"
 
 typedef struct erbal_parser {
-  int output, open, mark, comment;
+  int output, open, concat, comment;
   VALUE str, src, buffer;
 } erbal_parser;
 
