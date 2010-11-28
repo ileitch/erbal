@@ -1,7 +1,7 @@
 require 'bundler'
 Bundler.load
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_files = Dir.glob('spec/**/*_spec.rb')
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = Dir.glob('spec/**/*_spec.rb')
 end

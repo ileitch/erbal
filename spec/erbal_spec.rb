@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Erbal do
+describe Erbal do  
   def parse(str)
     Erbal.new(str, '@out').parse
   end
