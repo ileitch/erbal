@@ -15,12 +15,12 @@ VALUE rb_erbal_alloc(VALUE klass) {
   return obj;
 }
 
-VALUE rb_erbal_initialize(VALUE self, VALUE str, VALUE buffer) {
+VALUE rb_erbal_initialize(VALUE self, VALUE str, VALUE buffer_name) {
   Check_Type(str, T_STRING);
-  Check_Type(buffer, T_STRING);
+  Check_Type(buffer_name, T_STRING);
   erbal_parser *parser = NULL;
   Data_Get_Struct(self, erbal_parser, parser);
-  parser->buffer = buffer;
+  parser->buffer_name = buffer_name;
   parser->str = str;
   return self;
 }
