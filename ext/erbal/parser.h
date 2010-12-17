@@ -4,7 +4,7 @@
 #include "ruby.h"
 
 typedef struct erbal_parser {
-  unsigned int state, chars_seen;
+  unsigned int state, chars_seen, tag_seen;
   VALUE str, src, buffer_name;
 } erbal_parser;
 
@@ -14,9 +14,10 @@ inline void erbal_parser_tag_open_for_output(erbal_parser*);
 inline void erbal_parser_non_tag(erbal_parser*);
 inline void erbal_parser_tag_close(erbal_parser*);
 inline void erbal_parser_tag_close_with_trim(erbal_parser*);
+inline void erbal_parser_tag_close_common(erbal_parser*, int shift);
 inline void erbal_parser_finish(erbal_parser*);
-inline void erbal_concat_chars_seen(erbal_parser*);
-inline void erbal_parser_tag_open_common(erbal_parser*);
+inline void erbal_concat_chars_seen(erbal_parser*, int shift);
+inline void erbal_parser_tag_open_common(erbal_parser*, int shift);
 
 #define TAG_OPEN                1
 #define TAG_OPEN_FOR_COMMENT    2

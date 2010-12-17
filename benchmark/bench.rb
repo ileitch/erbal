@@ -3,7 +3,7 @@ require 'rubygems'
 require 'erubis'
 require File.expand_path(File.dirname(__FILE__)) + '/../lib/erbal'
 
-RUNS = 10000
+RUNS = 3000
 REPEAT = 6
 SRC = File.read('sample.erb')
 
@@ -19,10 +19,10 @@ class Benchmark
         total += Time.now-start
       end
       times << total
-      puts " #{i+1}) #{sprintf("%.2f", total)}" unless warmup
+      puts " #{i+1}) #{sprintf("%.3f", total)}" unless warmup
     end
     unless warmup
-      puts "=> Average: #{sprintf("%.2f", times.inject(0){|c, n| c += n} / times.size)}"
+      puts "=> Average: #{sprintf("%.3f", times.inject(0){|c, n| c += n} / times.size)}"
     end
   end
 end

@@ -21,114 +21,76 @@ static const int erbal_parser_en_main = 1;
 static char *ts, *te, *p, *pe, *eof;
 static int act, cs;
 
-inline void erbal_parser_tag_open_common(erbal_parser *parser) {
+inline void erbal_parser_tag_open_common(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    erbal_concat_chars_seen(parser);
+    rb_str_concat(parser->src, parser->buffer_name);
+    rb_str_buf_cat(parser->src, ".concat(\"", 9);
+    erbal_concat_chars_seen(parser, shift);
     rb_str_buf_cat(parser->src, "\");", 3);
     parser->chars_seen = 0;
-  }  
+  }
 }
 
 inline void erbal_parser_tag_open(erbal_parser *parser) {
-  erbal_parser_tag_open_common(parser);
+  erbal_parser_tag_open_common(parser, -1);
   parser->state = TAG_OPEN;
-
-
-  // parser->open = 1;
-  // if (parser->concat) {
-  //   parser->concat = 0;
-  //   rb_str_buf_cat(parser->src, "\");", 3);
-  // }
 }
 
 inline void erbal_parser_tag_open_for_output(erbal_parser *parser) {
-  erbal_parser_tag_open_common(parser);
+  erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN_FOR_OUTPUT;
-
-  // erbal_parser_tag_open(parser);
-  // parser->output = 1;
-  // rb_str_concat(parser->src, parser->buffer_name);
-  // rb_str_buf_cat(parser->src, ".concat((", 9);
 }
 
 inline void erbal_parser_tag_open_for_comment(erbal_parser *parser) {
   parser->state = TAG_OPEN_FOR_COMMENT;
-  // erbal_parser_tag_open(parser);
-  // parser->comment = 1;
 }
 
 inline void erbal_parser_non_tag(erbal_parser *parser) {
   parser->chars_seen += 1;
-
-  // if (parser->comment) {
-  //   return;
-  // }
-  //
-  // if (parser->open) {
-  //
-  //   rb_str_buf_cat(parser->src, p, 1);
-  // } else {
-  //   if (!parser->concat) {
-  //     parser->concat = 1;
-  //     rb_str_concat(parser->src, parser->buffer_name);
-  //     rb_str_buf_cat(parser->src, ".concat(\"", 9);
-  //   }
-  //   if (p[0] == '"') {
-  //     rb_str_buf_cat(parser->src, "\\\"", 2);
-  //   } else {
-  //     rb_str_buf_cat(parser->src, p, 1);
-  //   }
-  // }
 }
 
-inline void erbal_parser_tag_close_with_trim(erbal_parser *parser) {
-  if (p[1] == '\n') {
-    p--;
-  }
-
-  erbal_parser_tag_close(parser);
-  
-
-  // erbal_parser_tag_close(parser);
-  // if (p[1] == '\n') {
-  //   p++;
-  // }
-}
-
-inline void erbal_parser_tag_close(erbal_parser *parser) {
+inline void erbal_parser_tag_close_common(erbal_parser *parser, int tag_size) {
   if (parser->state == TAG_OPEN_FOR_OUTPUT) {
     rb_str_concat(parser->src, parser->buffer_name);
     rb_str_buf_cat(parser->src, ".concat((", 9);
-    erbal_concat_chars_seen(parser);
+    erbal_concat_chars_seen(parser, -tag_size);
     rb_str_buf_cat(parser->src, ").to_s);", 8);
   } else if (parser->state == TAG_OPEN) {
-    erbal_concat_chars_seen(parser);
+    erbal_concat_chars_seen(parser, -tag_size);
     rb_str_buf_cat(parser->src, ";", 1);
   }
 
   parser->state = OUTSIDE_TAG;
   parser->chars_seen = 0;
-
-  // parser->open = 0;
-  // if (parser->output) {
-  //   parser->output = 0;
-  //   rb_str_buf_cat(parser->src, ").to_s);", 8);
-  // } else if (!parser->comment) {
-  //   rb_str_buf_cat(parser->src, ";", 1);
-  // }
-  // parser->comment = 0;
 }
 
-inline void erbal_concat_chars_seen(erbal_parser *parser) {
-  if (parser->chars_seen != 0) {
-    rb_str_buf_cat(parser->src, ((p - 1) - parser->chars_seen), parser->chars_seen);    
+inline void erbal_parser_tag_close_with_trim(erbal_parser *parser) {
+  erbal_parser_tag_close_common(parser, 2);
+
+  if (*(p + 1) == '\n') {
+    p++;
   }
 }
 
+inline void erbal_parser_tag_close(erbal_parser *parser) {
+  erbal_parser_tag_close_common(parser, 1);
+}
+
+inline void erbal_concat_chars_seen(erbal_parser *parser, int rewind_chars) {
+  if (parser->chars_seen != 0) {
+    rb_str_buf_cat(parser->src, ((p + rewind_chars) - parser->chars_seen), parser->chars_seen);
+  }
+
+  parser->chars_seen = 0;
+}
+
 inline void erbal_parser_finish(erbal_parser *parser) {
-  // if (parser->concat) {
-  //   rb_str_buf_cat(parser->src, "\");", 3);
-  // }
+  if (parser->chars_seen != 0) {
+    rb_str_concat(parser->src, parser->buffer_name);
+    rb_str_buf_cat(parser->src, ".concat(\"", 9);
+    erbal_concat_chars_seen(parser, 0);
+    rb_str_buf_cat(parser->src, "\");", 3);
+  }
   rb_str_concat(parser->src, parser->buffer_name);
 }
 
@@ -138,7 +100,7 @@ void erbal_parser_init(erbal_parser *parser) {
   parser->src = rb_str_dup(parser->buffer_name);
   rb_str_buf_cat(parser->src, "=\"\";", 4);
   
-#line 142 "parser.c"
+#line 104 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -146,14 +108,14 @@ void erbal_parser_init(erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 139 "parser.rl"
+#line 101 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 157 "parser.c"
+#line 119 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -199,7 +161,7 @@ st1:
 case 1:
 #line 1 "NONE"
 	{ts = p;}
-#line 203 "parser.c"
+#line 165 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st2;
 		case 45: goto tr4;
@@ -221,7 +183,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 225 "parser.c"
+#line 187 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr6;
@@ -270,6 +232,6 @@ case 5:
 
 	}
 
-#line 145 "parser.rl"
+#line 107 "parser.rl"
   erbal_parser_finish(parser);
 }
