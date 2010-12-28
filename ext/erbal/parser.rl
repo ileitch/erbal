@@ -74,9 +74,28 @@ inline void erbal_parser_tag_close(erbal_parser *parser) {
   erbal_parser_tag_close_common(parser, 1);
 }
 
-inline void erbal_concat_chars_seen(erbal_parser *parser, int rewind_chars) {
+inline void erbal_concat_chars_seen(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    rb_str_buf_cat(parser->src, ((p + rewind_chars) - parser->chars_seen), parser->chars_seen);
+		if (parser->state == OUTSIDE_TAG) {
+			/* escape quotes */
+			VALUE buf;
+			buf = rb_str_buf_new("");
+			int slashes_seen = 0;
+			int i = 0;
+			for (i = 0; i <= parser->chars_seen; i++) {
+				if (*(((p + shift) - parser->chars_seen) + i) == '"') {
+					if (slashes_seen == 0) {
+						rb_str_buf_cat(buf, '"', 1);
+					} else {
+						
+					}
+				} else {
+					// rb_str_buf_cat(buf, p, 1);
+				}
+			}
+		} else {
+    	rb_str_buf_cat(parser->src, ((p + shift) - parser->chars_seen), parser->chars_seen);			
+		}
   }
 
   parser->chars_seen = 0;
@@ -95,6 +114,7 @@ inline void erbal_parser_finish(erbal_parser *parser) {
 void erbal_parser_init(erbal_parser *parser) {
   parser->state = 0;
   parser->chars_seen = 0;
+	parser->state = OUTSIDE_TAG;
   parser->src = rb_str_dup(parser->buffer_name);
   rb_str_buf_cat(parser->src, "=\"\";", 4);
   %% write init;

@@ -42,6 +42,19 @@ describe Erbal do
   it "should concat text surrounding the tags when the opening tag is <%=" do
     parse("1 + 1 is <%= 1 + 1 %>. Easy!").should == '@out="";@out.concat("1 + 1 is ");@out.concat(( 1 + 1 ).to_s);@out.concat(". Easy!");@out'
   end
+  
+  describe "when escaping double quotes" do
+    it "should escape an unescaped double quote" do
+      parse('my name is "ian" "<%= surname %>"').should == '@out="";@out.concat("my name is \"ian\" \"");@out.concat(( surname ).to_s);@out.concat("\"");@out'
+    end
 
-  it "should escape double quotes used with an outpuit tag"
+    it "should not escape an escaped double quote" do
+      parse('my name is \"ian\" \"<%= surname %>\"').should == '@out="";@out.concat("my name is \\\"ian\\\" \\\"");@out.concat(( surname ).to_s);@out.concat("\\\"");@out'
+    end
+    
+    it "should handle complex cases of multiple escape sequences" do
+      parse('my name is \\\"ian\\\" \\\"<%= surname %>\\\"').should == '@out="";@out.concat("my name is \\\\\"ian\\\\\" \\\\\"");@out.concat(( surname ).to_s);@out.concat("\\\\\"");@out'
+      parse('my name is \\"ian\\" \\"<%= surname %>\\"').should == '@out="";@out.concat("my name is \\\"ian\\\" \\\"");@out.concat(( surname ).to_s);@out.concat("\\\"");@out'
+    end
+  end
 end
