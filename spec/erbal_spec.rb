@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Erbal do
   def erbal_parse(str)
-    Erbal.new(str, '@out', {:debug => false}).parse
+    Erbal.new(str, '@out').parse
   end
 
   def erubis_parse(str)

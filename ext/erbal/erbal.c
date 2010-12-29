@@ -15,7 +15,11 @@ VALUE rb_erbal_alloc(VALUE klass) {
   return obj;
 }
 
-VALUE rb_erbal_initialize(VALUE self, VALUE str, VALUE buffer_name, VALUE options) {
+VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
+  VALUE str, buffer_name, options;
+
+  rb_scan_args(argc, argv, "21", &str, &buffer_name, &options);
+
   Check_Type(str, T_STRING);
   Check_Type(buffer_name, T_STRING);
 
@@ -24,7 +28,7 @@ VALUE rb_erbal_initialize(VALUE self, VALUE str, VALUE buffer_name, VALUE option
   parser->buffer_name = buffer_name;
   parser->str = str;
 
-  if (options == Qtrue) {
+  if (NIL_P(options)) {
     parser->options = rb_hash_new();
   } else {
     Check_Type(options, T_HASH);
@@ -45,6 +49,6 @@ VALUE rb_erbal_parse(VALUE self) {
 void Init_erbal() {
   cErbal = rb_define_class("Erbal", rb_cObject);
   rb_define_alloc_func(cErbal, rb_erbal_alloc);
-  rb_define_method(cErbal, "initialize", rb_erbal_initialize, 3);
+  rb_define_method(cErbal, "initialize", rb_erbal_initialize, -1);
   rb_define_method(cErbal, "parse", rb_erbal_parse, 0);
 }

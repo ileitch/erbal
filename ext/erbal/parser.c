@@ -157,7 +157,7 @@ inline void erbal_parser_finish(erbal_parser *parser) {
   }
 
   rb_str_concat(parser->src, parser->buffer_name);
-  
+
   if (parser->debug) {
     printf("ERBAL DEBUG: %s\n", RSTRING(rb_inspect(parser->src))->ptr);
   }
