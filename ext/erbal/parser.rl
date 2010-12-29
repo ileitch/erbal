@@ -47,6 +47,7 @@ inline void erbal_parser_tag_open_for_output(erbal_parser *parser) {
 }
 
 inline void erbal_parser_tag_open_for_comment(erbal_parser *parser) {
+  erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN_FOR_COMMENT;
 }
 

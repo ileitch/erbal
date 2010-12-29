@@ -48,6 +48,7 @@ inline void erbal_parser_tag_open_for_output(erbal_parser *parser) {
 }
 
 inline void erbal_parser_tag_open_for_comment(erbal_parser *parser) {
+  erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN_FOR_COMMENT;
 }
 
@@ -176,7 +177,7 @@ void erbal_parser_init(erbal_parser *parser) {
   parser->src = rb_str_dup(parser->buffer_name);
   rb_str_buf_cat(parser->src, " = '';", 6);
   
-#line 180 "parser.c"
+#line 181 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -184,14 +185,14 @@ void erbal_parser_init(erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 178 "parser.rl"
+#line 179 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 195 "parser.c"
+#line 196 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -241,7 +242,7 @@ st1:
 case 1:
 #line 1 "NONE"
 	{ts = p;}
-#line 245 "parser.c"
+#line 246 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st2;
 		case 45: goto tr4;
@@ -263,7 +264,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 267 "parser.c"
+#line 268 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr6;
@@ -313,6 +314,6 @@ case 5:
 
 	}
 
-#line 184 "parser.rl"
+#line 185 "parser.rl"
   erbal_parser_finish(parser);
 }

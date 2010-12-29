@@ -1,13 +1,13 @@
 --- !ruby/object:Gem::Specification 
 name: erbal
 version: !ruby/object:Gem::Version 
-  hash: 977940499
+  hash: 977940496
   prerelease: true
   segments: 
   - 1
   - 0
-  - rc6
-  version: 1.0.rc6
+  - rc7
+  version: 1.0.rc7
 platform: ruby
 authors: 
 - Ian Leitch

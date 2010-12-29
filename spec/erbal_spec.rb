@@ -40,7 +40,7 @@ describe Erbal do
   end
 
   it "should parse the comment tag <%#" do
-    erbal_parse("<%# I'm a comment %>").should == "@out = '';@out"
+    erbal_parse("Something:<br />\n<%# I'm a comment %>").should == "@out = '';@out << %Q`Something:<br />\n`;@out"
   end
 
   it "should swallow the following newline if the -%> tag is used" do
