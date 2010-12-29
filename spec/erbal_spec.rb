@@ -1,60 +1,82 @@
 require 'spec_helper'
 
 describe Erbal do
-  def parse(str)
+  def erbal_parse(str)
     Erbal.new(str, '@out').parse
   end
 
+  def erubis_parse(str)
+    require 'rubygems'
+    require 'erubis'
+    Erubis::FastEruby.new.convert(str)
+  end
+
+  def compare(str)
+    erbal_parse(str).should == erb_parse(str)
+  end
+
   it "should parse a blank string" do
-    parse("").should == '@out="";@out'
+    erbal_parse("").should == "@out = '';@out"
   end
 
   it "should parse content without any tags" do
-    parse("I love unicorns!").should == '@out="";@out.concat("I love unicorns!");@out'
+    erbal_parse("I love unicorns!").should == "@out = '';@out << %Q`I love unicorns!`;@out"
   end
 
   it "should parse the <% tag" do
-    parse("<% 1 + 1 %>").should == '@out=""; 1 + 1 ;@out'
+    erbal_parse("<% 1 + 1 %>").should == "@out = ''; 1 + 1 ;@out"
   end
 
   it "should parse the <%= tag" do
-    parse("<%= 1 + 1 %>").should == '@out="";@out.concat(( 1 + 1 ).to_s);@out'
+    erbal_parse("<%= 1 + 1 %>").should == "@out = '';@out << %Q`\#{ 1 + 1 }`;@out"
   end
 
   it "should parse the comment tag <%#" do
-    parse("<%# I'm a comment %>").should == '@out="";@out'
+    erbal_parse("<%# I'm a comment %>").should == "@out = '';@out"
   end
 
   it "should swallow the following newline if the -%> tag is used" do
-    parse("<%= 1 + 1 -%>\n").should == '@out="";@out.concat(( 1 + 1 ).to_s);@out'
+    erbal_parse("<%= 1 + 1 -%>\n\n").should == "@out = '';@out << %Q`\#{ 1 + 1 }\n`;@out"
   end
 
   it "should not swallow the following character if the -%> tag is used and the following character is not a newline" do
-    parse("<%= 1 + 1 -%>Z").should == '@out="";@out.concat(( 1 + 1 ).to_s);@out.concat("Z");@out'
+    erbal_parse("<%= 1 + 1 -%>Z").should == "@out = '';@out << %Q`\#{ 1 + 1 }Z`;@out"
   end
 
-  it "should swallow the preceding newline if the <%- tag is used"
-
   it "should concat text surrounding the tags when the opening tag is <%" do
-    parse("1 + 1 is <% 1 + 1 %>. Easy!").should == '@out="";@out.concat("1 + 1 is "); 1 + 1 ;@out.concat(". Easy!");@out'
+    erbal_parse("1 + 1 is <% 1 + 1 %>. Easy!").should == "@out = '';@out << %Q`1 + 1 is `; 1 + 1 ;@out << %Q`. Easy!`;@out"
   end
 
   it "should concat text surrounding the tags when the opening tag is <%=" do
-    parse("1 + 1 is <%= 1 + 1 %>. Easy!").should == '@out="";@out.concat("1 + 1 is ");@out.concat(( 1 + 1 ).to_s);@out.concat(". Easy!");@out'
+    erbal_parse("1 + 1 is <%= 1 + 1 %>. Easy!").should == "@out = '';@out << %Q`1 + 1 is \#{ 1 + 1 }. Easy!`;@out"
   end
-  
-  describe "when escaping double quotes" do
-    it "should escape an unescaped double quote" do
-      parse('my name is "ian" "<%= surname %>"').should == '@out="";@out.concat("my name is \"ian\" \"");@out.concat(( surname ).to_s);@out.concat("\"");@out'
-    end
 
-    it "should not escape an escaped double quote" do
-      parse('my name is \"ian\" \"<%= surname %>\"').should == '@out="";@out.concat("my name is \\\"ian\\\" \\\"");@out.concat(( surname ).to_s);@out.concat("\\\"");@out'
-    end
-    
-    it "should handle complex cases of multiple escape sequences" do
-      parse('my name is \\\"ian\\\" \\\"<%= surname %>\\\"').should == '@out="";@out.concat("my name is \\\\\"ian\\\\\" \\\\\"");@out.concat(( surname ).to_s);@out.concat("\\\\\"");@out'
-      parse('my name is \\"ian\\" \\"<%= surname %>\\"').should == '@out="";@out.concat("my name is \\\"ian\\\" \\\"");@out.concat(( surname ).to_s);@out.concat("\\\"");@out'
-    end
+  it "should not open a new buffer shift when there is more than one consecutive <%= tag" do
+    erbal_parse("1 + 1 is <%= 1 + 1 %>, and 2 + 2 is <%= 2 + 2 %>. Easy!").should == "@out = '';@out << %Q`1 + 1 is \#{ 1 + 1 }, and 2 + 2 is \#{ 2 + 2 }. Easy!`;@out"
+  end
+
+  it "should escape a hash character that signifies the start of a string interpolation" do
+    erbal_parse("<%= 1 + 1 -%> wee \#{1 + 3}").should == "@out = '';@out << %Q`\#{ 1 + 1 } wee \\\#{1 + 3}`;@out"
+    eval(erbal_parse("<%= 1 + 1 -%> wee \#{1 + 3}")).should == eval(erubis_parse("<%= 1 + 1 -%> wee \#{1 + 3}"))
+
+    erbal_parse("<%= 1 + 1 -%> wee \\\#{1 + 3}").should == "@out = '';@out << %Q`\#{ 1 + 1 } wee \\\\\\\#{1 + 3}`;@out"
+    eval(erbal_parse("<%= 1 + 1 -%> wee \\\#{1 + 3}")).should == eval(erubis_parse("<%= 1 + 1 -%> wee \\\#{1 + 3}"))
+
+    erbal_parse("<%= 1 + 1 -%> wee \\\\\\\#{1 + 3}").should == "@out = '';@out << %Q`\#{ 1 + 1 } wee \\\\\\\\\\\\\\\#{1 + 3}`;@out"
+    eval(erbal_parse("<%= 1 + 1 -%> wee \\\\\\\#{1 + 3}")).should == eval(erubis_parse("<%= 1 + 1 -%> wee \\\\\\\#{1 + 3}"))
+
+    erbal_parse('<%= 1 + 1 -%> wee #{1 + 3}').should == "@out = '';@out << %Q`\#{ 1 + 1 } wee \\\#{1 + 3}`;@out"
+    eval(erbal_parse('<%= 1 + 1 -%> wee #{1 + 3}')).should == eval(erubis_parse('<%= 1 + 1 -%> wee #{1 + 3}'))
+  end
+
+  it "should escape a backtick character that signifies the end off a buffer shift" do
+    erbal_parse("weeee `").should == "@out = '';@out << %Q`weeee \\``;@out"
+    eval(erbal_parse("weeee `")).should == eval(erubis_parse("weeee `"));
+
+    erbal_parse("weeee \\`").should == "@out = '';@out << %Q`weeee \\\\\\``;@out"
+    eval(erbal_parse("weeee \\`")).should == eval(erubis_parse("weeee \\`"))
+
+    erbal_parse("weeee \\\\\\\`").should == "@out = '';@out << %Q`weeee \\\\\\\\\\\\\\``;@out"
+    eval(erbal_parse("weeee \\\\\\\`")).should == eval(erubis_parse("weeee \\\\\\\`"))
   end
 end

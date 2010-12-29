@@ -1,7 +1,10 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    abstract (1.0.0)
     diff-lcs (1.1.2)
+    erubis (2.6.6)
+      abstract (>= 1.0.0)
     rake (0.8.7)
     rspec (2.3.0)
       rspec-core (~> 2.3.0)
@@ -16,5 +19,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  erubis (= 2.6.6)
   rake (= 0.8.7)
   rspec (= 2.3.0)
