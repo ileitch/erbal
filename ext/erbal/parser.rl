@@ -63,7 +63,7 @@ inline void erbal_parser_tag_close_common(erbal_parser *parser, int tag_size) {
     }
 
     erbal_concat_chars_seen(parser, -tag_size);
-    rb_str_buf_cat(parser->src, ";", 1);
+    rb_str_buf_cat(parser->src, ";\n", 2);
   }
 
   parser->state = OUTSIDE_TAG;

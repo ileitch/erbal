@@ -24,7 +24,11 @@ describe Erbal do
   end
 
   it "should parse the <% tag" do
-    erbal_parse("<% 1 + 1 %>").should == "@out = ''; 1 + 1 ;@out"
+    erbal_parse("<% 1 + 1 %>").should == "@out = ''; 1 + 1 ;\n@out"
+  end
+
+  it "should add a line break after <% %> tags incase the tags ended with a comment" do
+    erbal_parse("<% 1 + 1 # eeek comment! %> hi mom").should == "@out = ''; 1 + 1 # eeek comment! ;\n@out << %Q` hi mom`;@out"
   end
 
   it "should parse the <%= tag" do
@@ -44,7 +48,7 @@ describe Erbal do
   end
 
   it "should concat text surrounding the tags when the opening tag is <%" do
-    erbal_parse("1 + 1 is <% 1 + 1 %>. Easy!").should == "@out = '';@out << %Q`1 + 1 is `; 1 + 1 ;@out << %Q`. Easy!`;@out"
+    erbal_parse("1 + 1 is <% 1 + 1 %>. Easy!").should == "@out = '';@out << %Q`1 + 1 is `; 1 + 1 ;\n@out << %Q`. Easy!`;@out"
   end
 
   it "should concat text surrounding the tags when the opening tag is <%=" do
