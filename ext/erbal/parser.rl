@@ -6,6 +6,7 @@
 
   main := |*
     '<%'  => { erbal_parser_tag_open(parser); };
+    '<%-' => { erbal_parser_tag_open_with_dash(parser); };
     '<%#' => { erbal_parser_tag_open_for_comment(parser); };
     '<%=' => { erbal_parser_tag_open_for_output(parser); };
     '-%>' => { erbal_parser_tag_close_with_trim(parser); };
@@ -32,6 +33,11 @@ inline void erbal_parser_tag_open_common(erbal_parser *parser, int shift) {
 
 inline void erbal_parser_tag_open(erbal_parser *parser) {
   erbal_parser_tag_open_common(parser, -1);
+  parser->state = TAG_OPEN;
+}
+
+inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
+  erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN;
 }
 

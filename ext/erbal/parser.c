@@ -4,7 +4,7 @@
 #include "parser.h"
 
 
-#line 15 "parser.rl"
+#line 16 "parser.rl"
 
 
 
@@ -16,7 +16,7 @@ static const int erbal_parser_error = -1;
 static const int erbal_parser_en_main = 1;
 
 
-#line 18 "parser.rl"
+#line 19 "parser.rl"
 
 static char *ts, *te, *p, *pe, *eof;
 static int act, cs;
@@ -34,6 +34,11 @@ inline void erbal_parser_tag_open_common(erbal_parser *parser, int shift) {
 
 inline void erbal_parser_tag_open(erbal_parser *parser) {
   erbal_parser_tag_open_common(parser, -1);
+  parser->state = TAG_OPEN;
+}
+
+inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
+  erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN;
 }
 
@@ -171,7 +176,7 @@ void erbal_parser_init(erbal_parser *parser) {
   parser->src = rb_str_dup(parser->buffer_name);
   rb_str_buf_cat(parser->src, " = '';", 6);
   
-#line 175 "parser.c"
+#line 180 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -179,37 +184,37 @@ void erbal_parser_init(erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 172 "parser.rl"
+#line 178 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 190 "parser.c"
+#line 195 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
 	switch ( cs )
 	{
 tr0:
-#line 13 "parser.rl"
+#line 14 "parser.rl"
 	{{p = ((te))-1;}{ erbal_parser_non_tag(parser); }}
 	goto st1;
 tr1:
-#line 11 "parser.rl"
+#line 12 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_close_with_trim(parser); }}
 	goto st1;
 tr2:
-#line 13 "parser.rl"
+#line 14 "parser.rl"
 	{te = p+1;{ erbal_parser_non_tag(parser); }}
 	goto st1;
 tr6:
-#line 13 "parser.rl"
+#line 14 "parser.rl"
 	{te = p;p--;{ erbal_parser_non_tag(parser); }}
 	goto st1;
 tr7:
-#line 12 "parser.rl"
+#line 13 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_close(parser); }}
 	goto st1;
 tr10:
@@ -217,11 +222,15 @@ tr10:
 	{te = p;p--;{ erbal_parser_tag_open(parser); }}
 	goto st1;
 tr11:
-#line 9 "parser.rl"
+#line 10 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_open_for_comment(parser); }}
 	goto st1;
 tr12:
-#line 10 "parser.rl"
+#line 9 "parser.rl"
+	{te = p+1;{ erbal_parser_tag_open_with_dash(parser); }}
+	goto st1;
+tr13:
+#line 11 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_open_for_output(parser); }}
 	goto st1;
 st1:
@@ -232,7 +241,7 @@ st1:
 case 1:
 #line 1 "NONE"
 	{ts = p;}
-#line 236 "parser.c"
+#line 245 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st2;
 		case 45: goto tr4;
@@ -254,7 +263,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 258 "parser.c"
+#line 267 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr6;
@@ -278,7 +287,8 @@ st5:
 case 5:
 	switch( (*p) ) {
 		case 35: goto tr11;
-		case 61: goto tr12;
+		case 45: goto tr12;
+		case 61: goto tr13;
 	}
 	goto tr10;
 	}
@@ -303,6 +313,6 @@ case 5:
 
 	}
 
-#line 178 "parser.rl"
+#line 184 "parser.rl"
   erbal_parser_finish(parser);
 }

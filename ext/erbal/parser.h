@@ -9,6 +9,7 @@ typedef struct erbal_parser {
 } erbal_parser;
 
 inline void erbal_parser_tag_open(erbal_parser*);
+inline void erbal_parser_tag_open_with_dash(erbal_parser*);
 inline void erbal_parser_tag_open_for_comment(erbal_parser*);
 inline void erbal_parser_tag_open_for_output(erbal_parser*);
 inline void erbal_parser_non_tag(erbal_parser*);

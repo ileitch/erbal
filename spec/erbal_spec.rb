@@ -27,6 +27,10 @@ describe Erbal do
     erbal_parse("<% 1 + 1 %>").should == "@out = ''; 1 + 1 ;\n@out"
   end
 
+  it "should parse the <%- tag" do
+    erbal_parse("1 + 1 is <%- 1 + 1 %>").should == "@out = '';@out << %Q`1 + 1 is `; 1 + 1 ;\n@out"
+  end
+
   it "should add a line break after <% %> tags incase the tags ended with a comment" do
     erbal_parse("<% 1 + 1 # eeek comment! %> hi mom").should == "@out = ''; 1 + 1 # eeek comment! ;\n@out << %Q` hi mom`;@out"
   end
