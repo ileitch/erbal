@@ -4,8 +4,8 @@
 #include "ruby.h"
 
 typedef struct erbal_parser {
-  unsigned int state, chars_seen, in_buffer_shift;
-  VALUE str, src, buffer_name;
+  unsigned int state, chars_seen, in_buffer_shift, debug;
+  VALUE str, src, buffer_name, options;
 } erbal_parser;
 
 inline void erbal_parser_tag_open(erbal_parser*);

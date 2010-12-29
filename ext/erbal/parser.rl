@@ -150,12 +150,22 @@ inline void erbal_parser_finish(erbal_parser *parser) {
   }
 
   rb_str_concat(parser->src, parser->buffer_name);
+  
+  if (parser->debug) {
+    printf("ERBAL DEBUG: %s\n", RSTRING(rb_inspect(parser->src))->ptr);
+  }
 }
 
 void erbal_parser_init(erbal_parser *parser) {
   parser->chars_seen = 0;
   parser->in_buffer_shift = 0;
 	parser->state = OUTSIDE_TAG;
+  parser->debug = 0;
+
+  if (rb_hash_aref(parser->options, ID2SYM(rb_intern("debug"))) == Qtrue) {
+    parser->debug = 1;
+  }
+
   parser->src = rb_str_dup(parser->buffer_name);
   rb_str_buf_cat(parser->src, " = '';", 6);
   %% write init;

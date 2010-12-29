@@ -15,13 +15,22 @@ VALUE rb_erbal_alloc(VALUE klass) {
   return obj;
 }
 
-VALUE rb_erbal_initialize(VALUE self, VALUE str, VALUE buffer_name) {
+VALUE rb_erbal_initialize(VALUE self, VALUE str, VALUE buffer_name, VALUE options) {
   Check_Type(str, T_STRING);
   Check_Type(buffer_name, T_STRING);
+
   erbal_parser *parser = NULL;
   Data_Get_Struct(self, erbal_parser, parser);
   parser->buffer_name = buffer_name;
   parser->str = str;
+
+  if (options == Qtrue) {
+    parser->options = rb_hash_new();
+  } else {
+    Check_Type(options, T_HASH);
+    parser->options = options;
+  }
+
   return self;
 }
 
@@ -36,6 +45,6 @@ VALUE rb_erbal_parse(VALUE self) {
 void Init_erbal() {
   cErbal = rb_define_class("Erbal", rb_cObject);
   rb_define_alloc_func(cErbal, rb_erbal_alloc);
-  rb_define_method(cErbal, "initialize", rb_erbal_initialize, 2);
+  rb_define_method(cErbal, "initialize", rb_erbal_initialize, 3);
   rb_define_method(cErbal, "parse", rb_erbal_parse, 0);
 }
