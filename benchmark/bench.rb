@@ -29,7 +29,7 @@ end
 
 class ErbalBenchmark < Benchmark
   def self.parse
-    Erbal.new(SRC, "@output").parse
+    Erbal.new(SRC, "@output", {:debug => false}).parse
   end
 end
 
@@ -49,9 +49,9 @@ parsers = [ErbBenchmark, ErbalBenchmark, ErubisBenchmark]
 
 $stdout.write("=> Warming up.... ")
 $stdout.flush
-parsers.each do |b|
-  b.run(RUNS, 1, true)
-end
-puts "done"
+# parsers.each do |b|
+#   b.run(RUNS, 1, true)
+# end
+# puts "done"
 puts "=> #{RUNS} runs repeated #{REPEAT} times"
 parsers.map {|b| b.run(RUNS, REPEAT)}

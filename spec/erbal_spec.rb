@@ -63,7 +63,7 @@ describe Erbal do
     erbal_parse("1 + 1 is <%= 1 + 1 %>, and 2 + 2 is <%= 2 + 2 %>. Easy!").should == "@out = '';@out << %Q`1 + 1 is \#{ 1 + 1 }, and 2 + 2 is \#{ 2 + 2 }. Easy!`;@out"
   end
 
-  it "should escape a hash character that signifies the start of a string interpolation" do
+  it "should escape a hash character that signifies the start of a string interpolation when outside tags" do
     erbal_parse("<%= 1 + 1 -%> wee \#{1 + 3}").should == "@out = '';@out << %Q`\#{ 1 + 1 } wee \\\#{1 + 3}`;@out"
     eval(erbal_parse("<%= 1 + 1 -%> wee \#{1 + 3}")).should == eval(erubis_parse("<%= 1 + 1 -%> wee \#{1 + 3}"))
 
@@ -75,6 +75,11 @@ describe Erbal do
 
     erbal_parse('<%= 1 + 1 -%> wee #{1 + 3}').should == "@out = '';@out << %Q`\#{ 1 + 1 } wee \\\#{1 + 3}`;@out"
     eval(erbal_parse('<%= 1 + 1 -%> wee #{1 + 3}')).should == eval(erubis_parse('<%= 1 + 1 -%> wee #{1 + 3}'))
+  end
+
+  it "should not escape a hash character that signifies the start of a string interpolation when inside tags" do
+    erbal_parse('<%= "#{1 + 1}" -%>').should == "@out = '';@out << %Q`\#{ \"\#{1 + 1}\" }`;@out"
+    eval(erbal_parse('<%= "#{1 + 1}" -%>')).should == eval(erubis_parse('<%= "#{1 + 1}" -%>'))
   end
 
   it "should escape a backtick character that signifies the end off a buffer shift" do

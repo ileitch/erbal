@@ -121,7 +121,7 @@ inline VALUE erbal_escape_special_chars(erbal_parser *parser, int shift) {
 
 inline void erbal_concat_chars_seen(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    if (parser->in_buffer_shift) {
+    if (parser->in_buffer_shift && parser->state == OUTSIDE_TAG) {
       rb_str_concat(parser->src, erbal_escape_special_chars(parser, shift));
     } else {
     	rb_str_buf_cat(parser->src, ((p + shift) - parser->chars_seen), parser->chars_seen);
