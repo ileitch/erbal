@@ -1,12 +1,12 @@
 --- !ruby/object:Gem::Specification 
 name: erbal
 version: !ruby/object:Gem::Version 
-  hash: 15
+  hash: 13
   prerelease: false
   segments: 
   - 1
-  - 0
-  version: "1.0"
+  - 1
+  version: "1.1"
 platform: ruby
 authors: 
 - Ian Leitch
@@ -39,6 +39,7 @@ files:
 - tasks/gem.rake
 - tasks/spec.rake
 - benchmark/bench.rb
+- benchmark/mem_leak_detect.rb
 - benchmark/sample.erb
 - ext/erbal/parser.h
 - ext/erbal/erbal.c
