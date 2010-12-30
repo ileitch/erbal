@@ -28,6 +28,50 @@ Create the file 'config/initializers/erbal.rb' containing:
 
 I've not looked into yet.. patches are welcome! ;)
 
+== Benchmarks
+
+These benchmarks were run on a Mac OS X 10.6.4, 2.66 Ghx Intel Core i5 with 8 GB of 1067 MHz DDR3 RAM.
+
+Ruby: 1.8.7 (2010-04-19 patchlevel 253) [i686-darwin10.4.0], MBARI 0x6770, Ruby Enterprise Edition 2010.02
+Erubis: 2.6.6
+Erbal: 1.1
+
+    => Parsing Benchmark
+
+    => Erb
+    0.851 0.853 0.848 0.847 0.849 0.847
+    => Average: 0.849
+
+    => Erubis (using FastEruby engine)
+    0.442 0.442 0.444 0.442 0.441 0.442
+    => Average: 0.442
+
+    => Erubis (using default Eruby engine)
+    0.451 0.424 0.446 0.425 0.445 0.446
+    => Average: 0.439
+
+    => Erbal
+    0.036 0.039 0.066 0.038 0.067 0.039
+    => Average: 0.047
+
+    => eval() Benchmark
+
+    => Erb
+    0.203 0.192 0.180 0.180 0.179 0.191
+    => Average: 0.187
+
+    => Erubis (using FastEruby engine)
+    0.129 0.127 0.128 0.128 0.114 0.128
+    => Average: 0.125
+
+    => Erubis (using default Eruby engine)
+    0.178 0.176 0.165 0.176 0.175 0.164
+    => Average: 0.172
+
+    => Erbal
+    0.111 0.125 0.124 0.110 0.133 0.124
+    => Average: 0.121
+
 == Contributing
 
 * Fork the project.
