@@ -14,8 +14,8 @@ Erbal is a lightweight ERB parser that uses the Ragel State Machine Compiler (ht
 
 Erbal.new takes an optional 2nd argument which is a hash of options, available options are:
 
-* `:buffer`   The name of the output buffer, default is '@output_buffer'
-* `:buffer_initial_value`   The initial value of the output buffer, defaults to a blank string.
+* :buffer                   The name of the output buffer, default is '@output_buffer'
+* :buffer_initial_value     The initial value of the output buffer, defaults to a blank string.
 
 == Rails 2.3
 
