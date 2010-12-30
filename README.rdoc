@@ -2,72 +2,43 @@
 
 == Intro
 
-Erbal is a lightweight ERB parser based on the Ragel State Machine Compiler (http://www.complang.org/ragel/) and written in C. It's very fast.
-
-Please note that Erbal isn't intended as a full replacement for the ERB implementation that ships with Ruby. Erbal only implements parsing of the following tags:
-
-  <%, <%=, <%#, -%>, %>
-  
-This is to keep Erbal very simple and very fast. If there's a good case for implementing more features from ERB and it doesn't impact performance or add much complexity then I'll consider it. Personally I've never needed anything more.
+Erbal is a lightweight ERB parser that uses the Ragel State Machine Compiler (http://www.complang.org/ragel/). It's written in C, it's very fast. Erbal also produces faster Ruby code than Ruby's ERB implementation to give you a evaluation-time performance benefit.
 
 == Using Erbal
 
-  require 'erbal'
-  e = Erbal.new("<% a=1 -%> a is: <%= a -%>", "@output_buffer")
-  src = e.parse
-  eval(src)
-  
-== Rails
+  >> require 'erbal'
+  >> src = Erbal.new("<% a=1 -%>a is: <%= a -%>").parse
+  => "@output_buffer = ''; a=1 ;\n@output_buffer << %Q`a is: \#{ a }`;@output_buffer"
+  >> eval(src)
+  => "a is: 1"
 
-In your after_initialize block in config/environment.rb add:
+Erbal.new takes an optional 2nd argument which is a hash of options, available options are:
 
-  require 'erbal/rails'
+    * `:buffer`   The name of the output buffer, default is '@output_buffer'
+    * `:buffer_initial_value`   The initial value of the output buffer, defaults to a blank string.
+
+== Rails 2.3
+
+Create the file 'config/initializers/erbal.rb' containing:
+
+  require 'erbal/rails23'
   ActionView::Template.register_template_handler :erb, ErbalTemplateHandler
 
-== Benchmarks
+== Rails 3
 
-This benchmark was performed on a MacBook Pro with a 2.4Ghz Intel Core 2 Duo and 4GB 667Mhz DDR2 SDRAM. Running Mac OS X 10.6 (Snow Leopard). The code to run it is located in benchmark/bench.rb
+I've not looked into yet.. patches are welcome! ;)
 
-Summary:
+== Contributing
 
-Erbal is 14.6x faster than Ruby's ERB and 7.5x faster than Erubis.
-
-Details:
-
-Ruby: 1.8.7 (2009-06-12 patchlevel 174) [i686-darwin10]
-Erubis: 2.6.5 using Erubis::FastEruby.
-Erbal: 0.0.2
-
-  => Warming up.... done
-  => 10000 runs repeated 6 times
-
-  => Erb:
-   1) 13.01
-   2) 13.00
-   3) 13.01
-   4) 13.04
-   5) 13.13
-   6) 13.23
-  => Average: 13.07
-  
-  => Erbal:
-   1) 0.90
-   2) 0.89
-   3) 0.89
-   4) 0.90
-   5) 0.89
-   6) 0.89
-  => Average: 0.89
-  
-  => Erubis:
-   1) 6.63
-   2) 6.67
-   3) 6.69
-   4) 6.71
-   5) 6.72
-   6) 6.75
-  => Average: 6.70
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it, specs live in the specs/ directory.
+* Commit and send me a pull request.
 
 == Credits
 
 Many thanks to Adrian Thurston for writing the Ragel State Machine Compiler (http://www.complang.org/ragel/)!
+
+== Copyright
+
+Copyright (c) 2010 Envato & Ian Leitch. See LICENSE for details.
