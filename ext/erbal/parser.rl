@@ -174,15 +174,28 @@ void erbal_parser_init(erbal_parser *parser) {
     parser->debug = 0;
   }
 
-  if (!NIL_P(rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer"))))) {
-    parser->buffer_name = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer")));
-    Check_Type(parser->buffer_name, T_STRING);
+  VALUE buffer_name_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer")));
+
+  if (!NIL_P(buffer_name_val)) {
+    Check_Type(buffer_name_val, T_STRING);
+    parser->buffer_name = buffer_name_val;
   } else {
     parser->buffer_name = rb_str_new2("@output_buffer");
   }
 
   parser->src = rb_str_dup(parser->buffer_name);
-  rb_str_buf_cat(parser->src, " = '';", 6);
+
+  VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
+
+  if (!NIL_P(buffer_init_val)) {
+    Check_Type(buffer_init_val, T_STRING);
+    rb_str_buf_cat(parser->src, " = ", 3);
+    rb_str_concat(parser->src, buffer_init_val);
+    rb_str_buf_cat(parser->src, ";", 1);
+  } else {
+    rb_str_buf_cat(parser->src, " = '';", 6);
+  }
+
   %% write init;
 }
 

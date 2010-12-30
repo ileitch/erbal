@@ -23,6 +23,18 @@ describe Erbal do
     expect { erbal_parse("", :buffer => Class.new) }.should raise_error("wrong argument type Class (expected String)")
   end
 
+  it "should default to an empty string as the initial buffer value if the :buffer_initial_value is not specified" do
+    erbal_parse("", :buffer_initial_value => nil).should == "@output_buffer = '';@output_buffer"
+  end
+
+  it "should use the initial value for the buffer specified by the :buffer_initial_value option" do
+    erbal_parse("", :buffer_initial_value => 'MyClass.new').should == "@output_buffer = MyClass.new;@output_buffer"
+  end
+
+  it "should raise an error if the value given as the :buffer_initial_value option is not a string" do
+    expect { erbal_parse("", :buffer_initial_value => Class.new) }.should raise_error("wrong argument type Class (expected String)")
+  end
+
   it "should parse a blank string" do
     erbal_parse("").should == "@out = '';@out"
   end

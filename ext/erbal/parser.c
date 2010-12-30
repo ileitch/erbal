@@ -175,17 +175,30 @@ void erbal_parser_init(erbal_parser *parser) {
     parser->debug = 0;
   }
 
-  if (!NIL_P(rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer"))))) {
-    parser->buffer_name = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer")));
-    Check_Type(parser->buffer_name, T_STRING);
+  VALUE buffer_name_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer")));
+
+  if (!NIL_P(buffer_name_val)) {
+    Check_Type(buffer_name_val, T_STRING);
+    parser->buffer_name = buffer_name_val;
   } else {
     parser->buffer_name = rb_str_new2("@output_buffer");
   }
 
   parser->src = rb_str_dup(parser->buffer_name);
-  rb_str_buf_cat(parser->src, " = '';", 6);
+
+  VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
+
+  if (!NIL_P(buffer_init_val)) {
+    Check_Type(buffer_init_val, T_STRING);
+    rb_str_buf_cat(parser->src, " = ", 3);
+    rb_str_concat(parser->src, buffer_init_val);
+    rb_str_buf_cat(parser->src, ";", 1);
+  } else {
+    rb_str_buf_cat(parser->src, " = '';", 6);
+  }
+
   
-#line 189 "parser.c"
+#line 202 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -193,14 +206,14 @@ void erbal_parser_init(erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 187 "parser.rl"
+#line 200 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 204 "parser.c"
+#line 217 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -250,7 +263,7 @@ st1:
 case 1:
 #line 1 "NONE"
 	{ts = p;}
-#line 254 "parser.c"
+#line 267 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st2;
 		case 45: goto tr4;
@@ -272,7 +285,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 276 "parser.c"
+#line 289 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr6;
@@ -322,6 +335,6 @@ case 5:
 
 	}
 
-#line 193 "parser.rl"
+#line 206 "parser.rl"
   erbal_parser_finish(parser);
 }
