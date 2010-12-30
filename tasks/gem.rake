@@ -2,7 +2,7 @@ require 'rake/gempackagetask'
 require 'yaml'
 
 WIN_SUFFIX = ENV['WIN_SUFFIX'] || 'i386-mswin32'
-ERBAL_VERSION = '1.0.rc8'
+ERBAL_VERSION = '1.0'
 
 task :clean => :clobber_package
 
@@ -17,7 +17,7 @@ spec = Gem::Specification.new do |s|
   s.homepage              = 'http://github.com/ileitch/erbal'
   s.has_rdoc              = false
 
-  s.files                 = %w(COPYING CHANGELOG README.rdoc Rakefile) +
+  s.files                 = %w(LICENSE CHANGELOG README.rdoc Rakefile) +
                             Dir.glob("{lib,spec,tasks,benchmark}/**/*") +
                             Dir.glob("ext/**/*.{h,c,rb,rl}")
 

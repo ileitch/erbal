@@ -1,13 +1,12 @@
 --- !ruby/object:Gem::Specification 
 name: erbal
 version: !ruby/object:Gem::Version 
-  hash: 977940497
-  prerelease: true
+  hash: 15
+  prerelease: false
   segments: 
   - 1
   - 0
-  - rc8
-  version: 1.0.rc8
+  version: "1.0"
 platform: ruby
 authors: 
 - Ian Leitch
@@ -28,12 +27,12 @@ extensions:
 extra_rdoc_files: []
 
 files: 
-- COPYING
+- LICENSE
 - CHANGELOG
 - README.rdoc
 - Rakefile
 - lib/erbal
-- lib/erbal/rails.rb
+- lib/erbal/rails23.rb
 - spec/erbal_spec.rb
 - spec/spec_helper.rb
 - tasks/ext.rake
@@ -67,14 +66,12 @@ required_ruby_version: !ruby/object:Gem::Requirement
 required_rubygems_version: !ruby/object:Gem::Requirement 
   none: false
   requirements: 
-  - - ">"
+  - - ">="
     - !ruby/object:Gem::Version 
-      hash: 25
+      hash: 3
       segments: 
-      - 1
-      - 3
-      - 1
-      version: 1.3.1
+      - 0
+      version: "0"
 requirements: []
 
 rubyforge_project: 
