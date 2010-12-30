@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Erbal do
-  def erbal_parse(str)
-    Erbal.new(str, '@out').parse
+  def erbal_parse(str, options = {:buffer => '@out'})
+    Erbal.new(str, options).parse
   end
 
   def erubis_parse(str)
@@ -11,8 +11,16 @@ describe Erbal do
     Erubis::FastEruby.new.convert(str)
   end
 
-  def compare(str)
-    erbal_parse(str).should == erb_parse(str)
+  it "should default to @output_buffer if the :buffer option is not specified" do
+    erbal_parse("", :buffer => nil).should == "@output_buffer = '';@output_buffer"
+  end
+
+  it "should use the buffer specified via the :buffer option" do
+    erbal_parse("", :buffer => "_woot").should == "_woot = '';_woot"
+  end
+
+  it "should raise an error if the value given as the :buffer option is not a string" do
+    expect { erbal_parse("", :buffer => Class.new) }.should raise_error("wrong argument type Class (expected String)")
   end
 
   it "should parse a blank string" do

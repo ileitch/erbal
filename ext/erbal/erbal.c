@@ -16,16 +16,14 @@ VALUE rb_erbal_alloc(VALUE klass) {
 }
 
 VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
-  VALUE str, buffer_name, options;
+  VALUE str, options;
 
-  rb_scan_args(argc, argv, "21", &str, &buffer_name, &options);
+  rb_scan_args(argc, argv, "11", &str, &options);
 
   Check_Type(str, T_STRING);
-  Check_Type(buffer_name, T_STRING);
 
   erbal_parser *parser = NULL;
   Data_Get_Struct(self, erbal_parser, parser);
-  parser->buffer_name = buffer_name;
   parser->str = str;
 
   if (NIL_P(options)) {

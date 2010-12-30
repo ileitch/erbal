@@ -167,10 +167,18 @@ void erbal_parser_init(erbal_parser *parser) {
   parser->chars_seen = 0;
   parser->in_buffer_shift = 0;
 	parser->state = OUTSIDE_TAG;
-  parser->debug = 0;
 
   if (rb_hash_aref(parser->options, ID2SYM(rb_intern("debug"))) == Qtrue) {
     parser->debug = 1;
+  } else {
+    parser->debug = 0;
+  }
+
+  if (!NIL_P(rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer"))))) {
+    parser->buffer_name = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer")));
+    Check_Type(parser->buffer_name, T_STRING);
+  } else {
+    parser->buffer_name = rb_str_new2("@output_buffer");
   }
 
   parser->src = rb_str_dup(parser->buffer_name);
