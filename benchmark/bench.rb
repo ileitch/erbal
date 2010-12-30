@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'erb'
 require 'rubygems'
 require 'erubis'
@@ -5,7 +7,7 @@ require File.expand_path(File.dirname(__FILE__)) + '/../lib/erbal'
 
 RUNS = 3000
 REPEAT = 6
-SRC = File.read('sample.erb')
+SRC = File.read(File.expand_path(File.dirname(__FILE__)) + '/sample.erb')
 
 class Benchmark
   def self.run(runs, repeat, warmup=false)
@@ -13,7 +15,7 @@ class Benchmark
     times = []
     repeat.times do |i|
       total = 0
-      runs.times do
+      runs.times do |n|
         start = Time.now
         parse
         total += Time.now-start
@@ -29,7 +31,7 @@ end
 
 class ErbalBenchmark < Benchmark
   def self.parse
-    Erbal.new(SRC, "@output").parse
+    Erbal.new(SRC).parse
   end
 end
 
@@ -50,7 +52,7 @@ parsers = [ErbBenchmark, ErbalBenchmark, ErubisBenchmark]
 $stdout.write("=> Warming up.... ")
 $stdout.flush
 parsers.each do |b|
-  b.run(RUNS, 1, true)
+  b.run(10, 1, true)
 end
 puts "done"
 puts "=> #{RUNS} runs repeated #{REPEAT} times"
