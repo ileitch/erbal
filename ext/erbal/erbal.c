@@ -68,6 +68,17 @@ VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
 
   rb_iv_set(self, "@unsafe_concat_method", parser->unsafe_concat_method);
 
+  VALUE safe_concat_keyword_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("safe_concat_keyword")));
+
+  if (!NIL_P(safe_concat_keyword_val)) {
+    Check_Type(safe_concat_keyword_val, T_STRING);
+    parser->safe_concat_keyword = safe_concat_keyword_val;
+  } else {
+    parser->safe_concat_keyword = Qnil;
+  }
+
+  rb_iv_set(self, "@safe_concat_keyword", parser->safe_concat_keyword);
+
   return self;
 }
 

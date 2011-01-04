@@ -4,14 +4,29 @@
 %%{
   machine erbal_parser;
 
+  action keyword_start { parser->keyword_start = fpc; }
+  action keyword_preceding_whitespace { parser->keyword_preceding_whitespace = fpc; }
+  action keyword_trailing_whitespace { parser->keyword_trailing_whitespace = fpc; }
+
+  action keyword_end {
+    parser->keyword_end = fpc;
+    parser->keyword = rb_str_new(parser->keyword_start, (fpc - parser->keyword_start));
+  }
+
   main := |*
-    '<%'              => { erbal_parser_tag_open(parser); };
-    '<%-'             => { erbal_parser_tag_open_with_dash(parser); };
-    '<%#'             => { erbal_parser_tag_open_for_comment(parser); };
-    '<%='             => { erbal_parser_tag_open_for_unsafe_output(parser); };
-    '-%>'             => { erbal_parser_tag_close_with_trim(parser); };
-    '%>'              => { erbal_parser_tag_close(parser); };
-    any               => { erbal_parser_non_tag(parser); };
+    '<%'  => { erbal_parser_tag_open(parser); };
+    '<%-' => { erbal_parser_tag_open_with_dash(parser); };
+    '<%#' => { erbal_parser_tag_open_for_comment(parser); };
+    '<%=' => { erbal_parser_tag_open_for_unsafe_concat(parser); };
+    '-%>' => { erbal_parser_tag_close_with_trim(parser); };
+    '%>'  => { erbal_parser_tag_close(parser); };
+    any   => { erbal_parser_non_tag(parser); };
+
+    '<%=' (
+            [ ]* >keyword_preceding_whitespace
+            [a-z]+ >keyword_start %keyword_end 
+            [ ]+ %keyword_trailing_whitespace
+          ) => { erbal_parser_tag_open_choose_concat(parser); };
   *|;
 }%%
 
@@ -41,9 +56,26 @@ inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
   parser->state = TAG_OPEN;
 }
 
-inline void erbal_parser_tag_open_for_unsafe_output(erbal_parser *parser) {
+inline void erbal_parser_tag_open_choose_concat(erbal_parser *parser) {
+  if (parser->safe_concat_keyword == Qnil || strcmp(RSTRING(parser->keyword)->ptr, RSTRING(parser->safe_concat_keyword)->ptr) != 0) {
+    /* Keyword doesn't match, reset the buffer to the start of the expression match and act as if a keyword wasn't seen. */
+    p = parser->keyword_preceding_whitespace - 1;
+    erbal_parser_tag_open_for_unsafe_concat(parser);
+  } else {
+    /* Rewind the buffer to preserve whitespace following the keyword. */
+    p = p - (parser->keyword_trailing_whitespace - parser->keyword_end);
+    erbal_parser_tag_open_for_safe_concat(parser);
+  }
+}
+
+inline void erbal_parser_tag_open_for_unsafe_concat(erbal_parser *parser) {
   erbal_parser_tag_open_common(parser, -2);
-  parser->state = TAG_OPEN_FOR_OUTPUT;
+  parser->state = TAG_OPEN_FOR_UNSAFE_CONCAT;
+}
+
+inline void erbal_parser_tag_open_for_safe_concat(erbal_parser *parser) {
+  erbal_parser_tag_open_common(parser, -2);
+  parser->state = TAG_OPEN_FOR_SAFE_CONCAT;
 }
 
 inline void erbal_parser_tag_open_for_comment(erbal_parser *parser) {
@@ -56,9 +88,13 @@ inline void erbal_parser_non_tag(erbal_parser *parser) {
 }
 
 inline void erbal_parser_tag_close_common(erbal_parser *parser, int tag_size) {
-  if (parser->state == TAG_OPEN_FOR_OUTPUT) {
+  if (parser->state == TAG_OPEN_FOR_UNSAFE_CONCAT || parser->state == TAG_OPEN_FOR_SAFE_CONCAT) {
     if (!parser->in_buffer_concat) {
-      erbal_open_buffer_concat(parser, 0);
+      if (parser->state == TAG_OPEN_FOR_SAFE_CONCAT) {
+        erbal_open_buffer_concat(parser, 1);
+      } else {
+        erbal_open_buffer_concat(parser, 0);
+      }
     }
 
     rb_str_buf_cat(parser->src, "#{", 2);

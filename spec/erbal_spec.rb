@@ -132,7 +132,28 @@ describe Erbal do
       erbal_parse("<%= 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat').should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{ 1 + 1 }`);@output_buffer"
     end
 
-    it "should use the safe concat method for the <%= tag if the safe_concat_key option is also used"
-    it "should not use the safe concat method for the <%= tag if the safe_concat_key option is also used but not applicable"
+    it "should use the safe concat method for the <%= tag if the safe_concat_keyword option is also used" do
+      erbal_parse("<%= raw 1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{ 1 + 1 }`);@output_buffer"
+    end
+
+    it "should not use the safe concat method for the <%= tag if the safe_concat_keyword option is also used but not applicable" do
+      erbal_parse("<%= blah 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat').should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{ blah 1 + 1 }`);@output_buffer"
+    end
+
+    it "should not set a default safe_concat_keyword option" do
+      erbal_parse("<%= raw 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat', :safe_concat_keyword => nil).should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{ raw 1 + 1 }`);@output_buffer"
+    end
+
+    it "should preserve the whitespace following the safe_concat_keyword" do
+      erbal_parse("<%= raw     1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{     1 + 1 }`);@output_buffer"
+    end
+
+    it "should use the safe concat method for the <%= tag if the safe_concat_keyword option is also used and the keyword has no preceding whitespace" do
+      erbal_parse("<%=raw 1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{ 1 + 1 }`);@output_buffer"
+    end
+
+    it "should not use the safe concat method for the <%= tag if the safe_concat_keyword option is also used but not applicable and the keyword has no preceding whitespace" do
+      erbal_parse("<%=blah 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat').should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{blah 1 + 1 }`);@output_buffer"
+    end
   end
 end
