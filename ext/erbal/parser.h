@@ -1,16 +1,19 @@
 #ifndef erbal_parser_h
 #define erbal_parser_h
 
-#include "stddef.h"
 #include "ruby.h"
 
+typedef struct parser_state {
+  unsigned int tag;
+  unsigned int chars_seen;
+  unsigned int in_concat;
+} parser_state;
+
 typedef struct erbal_parser {
-  unsigned int state, chars_seen, in_buffer_concat, debug;
+  parser_state *state;
+  unsigned int debug;
   VALUE str, src, buffer_name, options, safe_concat_method, unsafe_concat_method, keyword, safe_concat_keyword;
-  char* keyword_start;
-  char* keyword_end;
-  char* keyword_trailing_whitespace;
-  char* keyword_preceding_whitespace;
+  char *keyword_start, *keyword_end, *keyword_trailing_whitespace, *keyword_preceding_whitespace;
 } erbal_parser;
 
 inline void erbal_parser_tag_open(erbal_parser*);

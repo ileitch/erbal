@@ -3,9 +3,15 @@
 
 static VALUE cErbal;
 
+void rb_erbal_free(erbal_parser *parser) {
+  free(parser->state);
+  free(parser);
+}
+
 VALUE rb_erbal_alloc(VALUE klass) {
   erbal_parser *parser = ALLOC(erbal_parser);
-  VALUE obj = Data_Wrap_Struct(klass, 0, free, parser);
+  parser->state = ALLOC(parser_state);
+  VALUE obj = Data_Wrap_Struct(klass, 0, rb_erbal_free, parser);
   return obj;
 }
 
