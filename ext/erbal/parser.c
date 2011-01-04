@@ -23,8 +23,8 @@ static int act, cs;
 
 inline void erbal_parser_tag_open_common(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    if (!parser->in_buffer_shift) {
-      erbal_open_buffer_shift(parser);
+    if (!parser->in_buffer_concat) {
+      erbal_open_buffer_concat(parser, 1);
     }
 
     erbal_concat_chars_seen(parser, shift);
@@ -42,7 +42,7 @@ inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
   parser->state = TAG_OPEN;
 }
 
-inline void erbal_parser_tag_open_for_output(erbal_parser *parser) {
+inline void erbal_parser_tag_open_for_unsafe_output(erbal_parser *parser) {
   erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN_FOR_OUTPUT;
 }
@@ -58,16 +58,16 @@ inline void erbal_parser_non_tag(erbal_parser *parser) {
 
 inline void erbal_parser_tag_close_common(erbal_parser *parser, int tag_size) {
   if (parser->state == TAG_OPEN_FOR_OUTPUT) {
-    if (!parser->in_buffer_shift) {
-      erbal_open_buffer_shift(parser);
+    if (!parser->in_buffer_concat) {
+      erbal_open_buffer_concat(parser, 0);
     }
 
     rb_str_buf_cat(parser->src, "#{", 2);
     erbal_concat_chars_seen(parser, -tag_size);
     rb_str_buf_cat(parser->src, "}", 1);
   } else if (parser->state == TAG_OPEN) {
-    if (parser->in_buffer_shift) {
-      erbal_close_buffer_shift(parser);
+    if (parser->in_buffer_concat) {
+      erbal_close_buffer_concat(parser);
     }
 
     erbal_concat_chars_seen(parser, -tag_size);
@@ -123,7 +123,7 @@ inline VALUE erbal_escape_special_chars(erbal_parser *parser, int shift) {
 
 inline void erbal_concat_chars_seen(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    if (parser->in_buffer_shift && parser->state == OUTSIDE_TAG) {
+    if (parser->in_buffer_concat && parser->state == OUTSIDE_TAG) {
       rb_str_concat(parser->src, erbal_escape_special_chars(parser, shift));
     } else {
     	rb_str_buf_cat(parser->src, ((p + shift) - parser->chars_seen), parser->chars_seen);
@@ -133,28 +133,37 @@ inline void erbal_concat_chars_seen(erbal_parser *parser, int shift) {
   parser->chars_seen = 0;
 }
 
-inline void erbal_open_buffer_shift(erbal_parser *parser) {
+inline void erbal_open_buffer_concat(erbal_parser *parser, int safe_concat) {
   rb_str_concat(parser->src, parser->buffer_name);
-  rb_str_buf_cat(parser->src, " << %Q`", 7);
-  parser->in_buffer_shift = 1;
+  rb_str_buf_cat(parser->src, ".", 1);
+
+  if (safe_concat) {
+    rb_str_concat(parser->src, parser->safe_concat_method);
+  } else {
+    rb_str_concat(parser->src, parser->unsafe_concat_method);
+  }
+
+  rb_str_buf_cat(parser->src, "(", 1);
+  rb_str_buf_cat(parser->src, "%Q`", 3);
+  parser->in_buffer_concat = 1;
 }
 
-inline void erbal_close_buffer_shift(erbal_parser *parser) {
-  rb_str_buf_cat(parser->src, "`;", 2);
-  parser->in_buffer_shift = 0;
+inline void erbal_close_buffer_concat(erbal_parser *parser) {
+  rb_str_buf_cat(parser->src, "`);", 3);
+  parser->in_buffer_concat = 0;
 }
 
 inline void erbal_parser_finish(erbal_parser *parser) {
   if (parser->chars_seen != 0) {
-    if (!parser->in_buffer_shift) {
-      erbal_open_buffer_shift(parser);
+    if (!parser->in_buffer_concat) {
+      erbal_open_buffer_concat(parser, 1);
     }
 
     erbal_concat_chars_seen(parser, 0);
   }
 
-  if (parser->in_buffer_shift) {
-    erbal_close_buffer_shift(parser);
+  if (parser->in_buffer_concat) {
+    erbal_close_buffer_concat(parser);
   }
 
   rb_str_concat(parser->src, parser->buffer_name);
@@ -166,7 +175,7 @@ inline void erbal_parser_finish(erbal_parser *parser) {
 
 void erbal_parser_init(VALUE self, erbal_parser *parser) {
   parser->chars_seen = 0;
-  parser->in_buffer_shift = 0;
+  parser->in_buffer_concat = 0;
 	parser->state = OUTSIDE_TAG;
   parser->src = rb_str_dup(parser->buffer_name);
 
@@ -184,7 +193,7 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
   }
 
   
-#line 188 "parser.c"
+#line 197 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -192,14 +201,14 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 186 "parser.rl"
+#line 195 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 203 "parser.c"
+#line 212 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -239,7 +248,7 @@ tr12:
 	goto st1;
 tr13:
 #line 11 "parser.rl"
-	{te = p+1;{ erbal_parser_tag_open_for_output(parser); }}
+	{te = p+1;{ erbal_parser_tag_open_for_unsafe_output(parser); }}
 	goto st1;
 st1:
 #line 1 "NONE"
@@ -249,7 +258,7 @@ st1:
 case 1:
 #line 1 "NONE"
 	{ts = p;}
-#line 253 "parser.c"
+#line 262 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st2;
 		case 45: goto tr4;
@@ -271,7 +280,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 275 "parser.c"
+#line 284 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr6;
@@ -321,6 +330,6 @@ case 5:
 
 	}
 
-#line 192 "parser.rl"
+#line 201 "parser.rl"
   erbal_parser_finish(parser);
 }

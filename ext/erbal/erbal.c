@@ -46,6 +46,28 @@ VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
 
   rb_iv_set(self, "@buffer_name", parser->buffer_name);
 
+  VALUE safe_concat_method_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("safe_concat_method")));
+
+  if (!NIL_P(safe_concat_method_val)) {
+    Check_Type(safe_concat_method_val, T_STRING);
+    parser->safe_concat_method = safe_concat_method_val;
+  } else {
+    parser->safe_concat_method = rb_str_new2("concat");
+  }
+
+  rb_iv_set(self, "@safe_concat_method", parser->safe_concat_method);
+
+  VALUE unsafe_concat_method_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("unsafe_concat_method")));
+
+  if (!NIL_P(unsafe_concat_method_val)) {
+    Check_Type(unsafe_concat_method_val, T_STRING);
+    parser->unsafe_concat_method = unsafe_concat_method_val;
+  } else {
+    parser->unsafe_concat_method = rb_str_new2("concat");
+  }
+
+  rb_iv_set(self, "@unsafe_concat_method", parser->unsafe_concat_method);
+
   return self;
 }
 

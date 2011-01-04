@@ -5,13 +5,13 @@
   machine erbal_parser;
 
   main := |*
-    '<%'  => { erbal_parser_tag_open(parser); };
-    '<%-' => { erbal_parser_tag_open_with_dash(parser); };
-    '<%#' => { erbal_parser_tag_open_for_comment(parser); };
-    '<%=' => { erbal_parser_tag_open_for_output(parser); };
-    '-%>' => { erbal_parser_tag_close_with_trim(parser); };
-    '%>'  => { erbal_parser_tag_close(parser); };
-    any   => { erbal_parser_non_tag(parser); };
+    '<%'              => { erbal_parser_tag_open(parser); };
+    '<%-'             => { erbal_parser_tag_open_with_dash(parser); };
+    '<%#'             => { erbal_parser_tag_open_for_comment(parser); };
+    '<%='             => { erbal_parser_tag_open_for_unsafe_output(parser); };
+    '-%>'             => { erbal_parser_tag_close_with_trim(parser); };
+    '%>'              => { erbal_parser_tag_close(parser); };
+    any               => { erbal_parser_non_tag(parser); };
   *|;
 }%%
 
@@ -22,8 +22,8 @@ static int act, cs;
 
 inline void erbal_parser_tag_open_common(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    if (!parser->in_buffer_shift) {
-      erbal_open_buffer_shift(parser);
+    if (!parser->in_buffer_concat) {
+      erbal_open_buffer_concat(parser, 1);
     }
 
     erbal_concat_chars_seen(parser, shift);
@@ -41,7 +41,7 @@ inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
   parser->state = TAG_OPEN;
 }
 
-inline void erbal_parser_tag_open_for_output(erbal_parser *parser) {
+inline void erbal_parser_tag_open_for_unsafe_output(erbal_parser *parser) {
   erbal_parser_tag_open_common(parser, -2);
   parser->state = TAG_OPEN_FOR_OUTPUT;
 }
@@ -57,16 +57,16 @@ inline void erbal_parser_non_tag(erbal_parser *parser) {
 
 inline void erbal_parser_tag_close_common(erbal_parser *parser, int tag_size) {
   if (parser->state == TAG_OPEN_FOR_OUTPUT) {
-    if (!parser->in_buffer_shift) {
-      erbal_open_buffer_shift(parser);
+    if (!parser->in_buffer_concat) {
+      erbal_open_buffer_concat(parser, 0);
     }
 
     rb_str_buf_cat(parser->src, "#{", 2);
     erbal_concat_chars_seen(parser, -tag_size);
     rb_str_buf_cat(parser->src, "}", 1);
   } else if (parser->state == TAG_OPEN) {
-    if (parser->in_buffer_shift) {
-      erbal_close_buffer_shift(parser);
+    if (parser->in_buffer_concat) {
+      erbal_close_buffer_concat(parser);
     }
 
     erbal_concat_chars_seen(parser, -tag_size);
@@ -122,7 +122,7 @@ inline VALUE erbal_escape_special_chars(erbal_parser *parser, int shift) {
 
 inline void erbal_concat_chars_seen(erbal_parser *parser, int shift) {
   if (parser->chars_seen != 0) {
-    if (parser->in_buffer_shift && parser->state == OUTSIDE_TAG) {
+    if (parser->in_buffer_concat && parser->state == OUTSIDE_TAG) {
       rb_str_concat(parser->src, erbal_escape_special_chars(parser, shift));
     } else {
     	rb_str_buf_cat(parser->src, ((p + shift) - parser->chars_seen), parser->chars_seen);
@@ -132,28 +132,37 @@ inline void erbal_concat_chars_seen(erbal_parser *parser, int shift) {
   parser->chars_seen = 0;
 }
 
-inline void erbal_open_buffer_shift(erbal_parser *parser) {
+inline void erbal_open_buffer_concat(erbal_parser *parser, int safe_concat) {
   rb_str_concat(parser->src, parser->buffer_name);
-  rb_str_buf_cat(parser->src, " << %Q`", 7);
-  parser->in_buffer_shift = 1;
+  rb_str_buf_cat(parser->src, ".", 1);
+
+  if (safe_concat) {
+    rb_str_concat(parser->src, parser->safe_concat_method);
+  } else {
+    rb_str_concat(parser->src, parser->unsafe_concat_method);
+  }
+
+  rb_str_buf_cat(parser->src, "(", 1);
+  rb_str_buf_cat(parser->src, "%Q`", 3);
+  parser->in_buffer_concat = 1;
 }
 
-inline void erbal_close_buffer_shift(erbal_parser *parser) {
-  rb_str_buf_cat(parser->src, "`;", 2);
-  parser->in_buffer_shift = 0;
+inline void erbal_close_buffer_concat(erbal_parser *parser) {
+  rb_str_buf_cat(parser->src, "`);", 3);
+  parser->in_buffer_concat = 0;
 }
 
 inline void erbal_parser_finish(erbal_parser *parser) {
   if (parser->chars_seen != 0) {
-    if (!parser->in_buffer_shift) {
-      erbal_open_buffer_shift(parser);
+    if (!parser->in_buffer_concat) {
+      erbal_open_buffer_concat(parser, 1);
     }
 
     erbal_concat_chars_seen(parser, 0);
   }
 
-  if (parser->in_buffer_shift) {
-    erbal_close_buffer_shift(parser);
+  if (parser->in_buffer_concat) {
+    erbal_close_buffer_concat(parser);
   }
 
   rb_str_concat(parser->src, parser->buffer_name);
@@ -165,7 +174,7 @@ inline void erbal_parser_finish(erbal_parser *parser) {
 
 void erbal_parser_init(VALUE self, erbal_parser *parser) {
   parser->chars_seen = 0;
-  parser->in_buffer_shift = 0;
+  parser->in_buffer_concat = 0;
 	parser->state = OUTSIDE_TAG;
   parser->src = rb_str_dup(parser->buffer_name);
 
