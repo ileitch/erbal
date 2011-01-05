@@ -43,7 +43,7 @@ inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
 }
 
 inline void erbal_parser_tag_open_choose_concat(erbal_parser *parser) {
-  if (parser->safe_concat_keyword == Qnil || strcmp(RSTRING(parser->keyword)->ptr, RSTRING(parser->safe_concat_keyword)->ptr) != 0) {
+  if (strcmp(RSTRING(parser->keyword)->ptr, RSTRING(parser->safe_concat_keyword)->ptr) != 0) {
     /* Keyword doesn't match, reset the buffer to the start of the expression match and act as if a keyword wasn't seen. */
     p = parser->keyword_preceding_whitespace - 1;
     erbal_parser_tag_open_for_unsafe_concat(parser);

@@ -15,6 +15,21 @@ VALUE rb_erbal_alloc(VALUE klass) {
   return obj;
 }
 
+void rb_erbal_setup_option(VALUE self, erbal_parser* parser, VALUE* parser_option, const char* key, const char* default_value) {
+  VALUE value = rb_hash_aref(parser->options, ID2SYM(rb_intern(key)));
+
+  if (!NIL_P(value)) {
+    Check_Type(value, T_STRING);
+    *(parser_option) = value;
+  } else {
+    *(parser_option) = rb_str_new2(default_value);
+  }
+
+  VALUE ivar = rb_str_new2("@");
+  ivar = rb_str_cat2(ivar, key);
+  rb_iv_set(self, RSTRING(ivar)->ptr, *(parser_option));
+}
+
 VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
   VALUE str, options;
 
@@ -41,49 +56,10 @@ VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
     parser->debug = 0;
   }
 
-  VALUE buffer_name_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer")));
-
-  if (!NIL_P(buffer_name_val)) {
-    Check_Type(buffer_name_val, T_STRING);
-    parser->buffer_name = buffer_name_val;
-  } else {
-    parser->buffer_name = rb_str_new2("@output_buffer");
-  }
-
-  rb_iv_set(self, "@buffer_name", parser->buffer_name);
-
-  VALUE safe_concat_method_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("safe_concat_method")));
-
-  if (!NIL_P(safe_concat_method_val)) {
-    Check_Type(safe_concat_method_val, T_STRING);
-    parser->safe_concat_method = safe_concat_method_val;
-  } else {
-    parser->safe_concat_method = rb_str_new2("concat");
-  }
-
-  rb_iv_set(self, "@safe_concat_method", parser->safe_concat_method);
-
-  VALUE unsafe_concat_method_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("unsafe_concat_method")));
-
-  if (!NIL_P(unsafe_concat_method_val)) {
-    Check_Type(unsafe_concat_method_val, T_STRING);
-    parser->unsafe_concat_method = unsafe_concat_method_val;
-  } else {
-    parser->unsafe_concat_method = rb_str_new2("concat");
-  }
-
-  rb_iv_set(self, "@unsafe_concat_method", parser->unsafe_concat_method);
-
-  VALUE safe_concat_keyword_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("safe_concat_keyword")));
-
-  if (!NIL_P(safe_concat_keyword_val)) {
-    Check_Type(safe_concat_keyword_val, T_STRING);
-    parser->safe_concat_keyword = safe_concat_keyword_val;
-  } else {
-    parser->safe_concat_keyword = Qnil;
-  }
-
-  rb_iv_set(self, "@safe_concat_keyword", parser->safe_concat_keyword);
+  rb_erbal_setup_option(self, parser, &parser->buffer_name, "buffer", "@output_buffer");
+  rb_erbal_setup_option(self, parser, &parser->safe_concat_method, "safe_concat_method", "concat");
+  rb_erbal_setup_option(self, parser, &parser->unsafe_concat_method, "unsafe_concat_method", "concat");
+  rb_erbal_setup_option(self, parser, &parser->safe_concat_keyword, "safe_concat_keyword", "");
 
   return self;
 }
