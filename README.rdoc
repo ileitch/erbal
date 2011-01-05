@@ -20,7 +20,7 @@ Erbal.new takes an optional 2nd argument which is a hash of options, available o
 * :unsafe_concat_method - The method to call on the buffer when concatenating a string which DOES need escaping, i.e <%= some_method %> will result in the use of unsafe_concat_method. Default is 'concat'.
 * :safe_concat_method - Normally the '<%=' tag uses the unsafe_concat_method, with this option you can specify a keyword to signify that safe_concat_method should be used instead. For example if safe_concat_method is set to 'raw' then <%= raw some_method %> will result in a concatenation using the safe_concat_method. Default is blank, i.e no keyword is specified.
 
-!!! NOTE: Erbal itself does NOT perform escaping, it is the responsibility of your unsafe_concat_method to escape the string passed to it.
+<b>NOTE: Erbal itself does NOT perform escaping, it is the responsibility of your unsafe_concat_method to escape the string passed to it.</b>
 
 == Rails 2.3
 
