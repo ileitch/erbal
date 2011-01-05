@@ -1,3 +1,4 @@
+require 'action_pack'
 require 'erbal'
 
 class Erbal
