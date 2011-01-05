@@ -141,11 +141,15 @@ describe Erbal do
     end
 
     it "should not set a default safe_concat_keyword option" do
-      erbal_parse("<%= raw 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat', :safe_concat_keyword => nil).should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{ raw 1 + 1 }`);@output_buffer"
+      erbal_parse("1 + 1 is <%= raw 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat', :safe_concat_keyword => nil).should == "@output_buffer = '';@output_buffer.concat(%Q`1 + 1 is `);@output_buffer.unsafe_concat(%Q`\#{ raw 1 + 1 }`);@output_buffer"
     end
 
     it "should preserve the whitespace following the safe_concat_keyword" do
-      erbal_parse("<%= raw     1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{     1 + 1 }`);@output_buffer"
+      erbal_parse("<%= raw   1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{   1 + 1 }`);@output_buffer"
+    end
+
+    it "should not swallow the text preceding the safe concat" do
+      erbal_parse("omg don't eat me! <%= raw   1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`omg don't eat me! \#{   1 + 1 }`);@output_buffer"
     end
 
     it "should use the safe concat method for the <%= tag if the safe_concat_keyword option is also used and the keyword has no preceding whitespace" do
@@ -153,7 +157,37 @@ describe Erbal do
     end
 
     it "should not use the safe concat method for the <%= tag if the safe_concat_keyword option is also used but not applicable and the keyword has no preceding whitespace" do
-      erbal_parse("<%=blah 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat').should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{blah 1 + 1 }`);@output_buffer"
+      erbal_parse("omglololo <%=blah 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat').should == "@output_buffer = '';@output_buffer.concat(%Q`omglololo `);@output_buffer.unsafe_concat(%Q`\#{blah 1 + 1 }`);@output_buffer"
+    end
+
+    it "should end the current safe concat and begin a new unsafe concat" do
+      erbal_parse("hello <%= \"world\" %>", :unsafe_concat_method => 'unsafe_concat', :safe_concat_method => 'safe_concat').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`hello `);@output_buffer.unsafe_concat(%Q`\#{ \"world\" }`);@output_buffer"
+    end
+
+    it "should end the current unsafe concat and begin a new safe concat when at the end of the source" do
+      erbal_parse("<%= \"hello\" %> world", :unsafe_concat_method => 'unsafe_concat', :safe_concat_method => 'safe_concat').should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{ \"hello\" }`);@output_buffer.safe_concat(%Q` world`);@output_buffer"
+    end
+
+    it "should end the current unsafe concat and begin a new safe concat when inbetween two unsafe concats" do
+      erbal_parse("<%= \"hello\" %> world <%= \"woot\" %>", :unsafe_concat_method => 'unsafe_concat', :safe_concat_method => 'safe_concat').should == "@output_buffer = '';@output_buffer.unsafe_concat(%Q`\#{ \"hello\" }`);@output_buffer.safe_concat(%Q` world `);@output_buffer.unsafe_concat(%Q`\#{ \"woot\" }`);@output_buffer"
+    end
+
+    describe "when preserving string interpolation optimizations if safe and unsafe concat methods are the same" do
+      it "should use interpolation if we switch from a safe concat to an unsafe concat" do
+        erbal_parse("hello <%= \"world\" %>", :unsafe_concat_method => 'concat', :safe_concat_method => 'concat').should == "@output_buffer = '';@output_buffer.concat(%Q`hello \#{ \"world\" }`);@output_buffer"
+      end
+
+      it "should use interpolation if we switch from an unsafe concat to a safe concat" do
+        erbal_parse("<%= \"hello\" %> world", :unsafe_concat_method => 'concat', :safe_concat_method => 'concat').should == "@output_buffer = '';@output_buffer.concat(%Q`\#{ \"hello\" } world`);@output_buffer"
+      end
+
+      it "should use interpolation if we switch from a safe concat to an unsafe concat and then back again" do
+        erbal_parse("hello <%= \"world\" %> woot", :unsafe_concat_method => 'concat', :safe_concat_method => 'concat').should == "@output_buffer = '';@output_buffer.concat(%Q`hello \#{ \"world\" } woot`);@output_buffer"
+      end
+
+      it "should use interpolation if we switch from an unsafe concat to a safe concat and then back again" do
+        erbal_parse("omg <%= \"hello\" %> world", :unsafe_concat_method => 'concat', :safe_concat_method => 'concat').should == "@output_buffer = '';@output_buffer.concat(%Q`omg \#{ \"hello\" } world`);@output_buffer"
+      end
     end
   end
 end
