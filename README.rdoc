@@ -26,8 +26,7 @@ Erbal.new takes an optional 2nd argument which is a hash of options, available o
 
 Create the file 'config/initializers/erbal.rb' containing:
 
-  require 'erbal/rails23'
-  ActionView::Template.register_template_handler :erb, ErbalTemplateHandler
+  require 'erbal/rails'
 
 == Rails 3
 
