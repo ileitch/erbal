@@ -9,11 +9,11 @@
 
 
 #line 12 "parser.c"
-static const int erbal_parser_start = 3;
-static const int erbal_parser_first_final = 3;
+static const int erbal_parser_start = 4;
+static const int erbal_parser_first_final = 4;
 static const int erbal_parser_error = -1;
 
-static const int erbal_parser_en_main = 3;
+static const int erbal_parser_en_main = 4;
 
 
 #line 34 "parser.rl"
@@ -265,83 +265,83 @@ void erbal_parser_exec(erbal_parser *parser) {
 tr0:
 #line 23 "parser.rl"
 	{{p = ((te))-1;}{ erbal_parser_non_tag(parser); }}
-	goto st3;
+	goto st4;
 tr1:
 #line 21 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_close_with_trim(parser); }}
-	goto st3;
+	goto st4;
 tr2:
 #line 20 "parser.rl"
 	{{p = ((te))-1;}{ erbal_parser_tag_open_for_unsafe_concat(parser); }}
-	goto st3;
-tr7:
+	goto st4;
+tr8:
 #line 23 "parser.rl"
 	{te = p+1;{ erbal_parser_non_tag(parser); }}
-	goto st3;
-tr11:
+	goto st4;
+tr12:
 #line 23 "parser.rl"
 	{te = p;p--;{ erbal_parser_non_tag(parser); }}
-	goto st3;
-tr12:
+	goto st4;
+tr13:
 #line 22 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_close(parser); }}
-	goto st3;
-tr15:
+	goto st4;
+tr16:
 #line 17 "parser.rl"
 	{te = p;p--;{ erbal_parser_tag_open(parser); }}
-	goto st3;
-tr16:
+	goto st4;
+tr17:
 #line 19 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_open_for_comment(parser); }}
-	goto st3;
-tr17:
+	goto st4;
+tr18:
 #line 18 "parser.rl"
 	{te = p+1;{ erbal_parser_tag_open_with_dash(parser); }}
-	goto st3;
-tr19:
+	goto st4;
+tr20:
 #line 20 "parser.rl"
 	{te = p;p--;{ erbal_parser_tag_open_for_unsafe_concat(parser); }}
-	goto st3;
-tr22:
+	goto st4;
+tr24:
 #line 9 "parser.rl"
 	{ parser->keyword_trailing_whitespace = p; }
 #line 29 "parser.rl"
 	{te = p;p--;{ erbal_parser_tag_open_choose_concat(parser); }}
-	goto st3;
-st3:
+	goto st4;
+st4:
 #line 1 "NONE"
 	{ts = 0;}
 	if ( ++p == pe )
-		goto _test_eof3;
-case 3:
+		goto _test_eof4;
+case 4:
 #line 1 "NONE"
 	{ts = p;}
 #line 320 "parser.c"
 	switch( (*p) ) {
-		case 37: goto st4;
-		case 45: goto tr9;
-		case 60: goto st6;
+		case 37: goto st5;
+		case 45: goto tr10;
+		case 60: goto st7;
 	}
-	goto tr7;
-st4:
-	if ( ++p == pe )
-		goto _test_eof4;
-case 4:
-	if ( (*p) == 62 )
-		goto tr12;
-	goto tr11;
-tr9:
-#line 1 "NONE"
-	{te = p+1;}
-	goto st5;
+	goto tr8;
 st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
+	if ( (*p) == 62 )
+		goto tr13;
+	goto tr12;
+tr10:
+#line 1 "NONE"
+	{te = p+1;}
+	goto st6;
+st6:
+	if ( ++p == pe )
+		goto _test_eof6;
+case 6:
 #line 342 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
-	goto tr11;
+	goto tr12;
 st0:
 	if ( ++p == pe )
 		goto _test_eof0;
@@ -349,48 +349,48 @@ case 0:
 	if ( (*p) == 62 )
 		goto tr1;
 	goto tr0;
-st6:
-	if ( ++p == pe )
-		goto _test_eof6;
-case 6:
-	if ( (*p) == 37 )
-		goto st7;
-	goto tr11;
 st7:
 	if ( ++p == pe )
 		goto _test_eof7;
 case 7:
-	switch( (*p) ) {
-		case 35: goto tr16;
-		case 45: goto tr17;
-		case 61: goto tr18;
-	}
-	goto tr15;
-tr18:
-#line 1 "NONE"
-	{te = p+1;}
-	goto st8;
+	if ( (*p) == 37 )
+		goto st8;
+	goto tr12;
 st8:
 	if ( ++p == pe )
 		goto _test_eof8;
 case 8:
+	switch( (*p) ) {
+		case 35: goto tr17;
+		case 45: goto tr18;
+		case 61: goto tr19;
+	}
+	goto tr16;
+tr19:
+#line 1 "NONE"
+	{te = p+1;}
+	goto st9;
+st9:
+	if ( ++p == pe )
+		goto _test_eof9;
+case 9:
 #line 378 "parser.c"
 	switch( (*p) ) {
-		case 32: goto tr20;
-		case 33: goto tr21;
-		case 36: goto tr21;
-		case 38: goto tr21;
-		case 61: goto tr21;
-		case 64: goto tr21;
-		case 94: goto tr21;
+		case 32: goto tr21;
+		case 33: goto tr22;
+		case 36: goto tr22;
+		case 38: goto tr22;
+		case 61: goto tr22;
+		case 64: goto tr22;
+		case 94: goto tr22;
 	}
 	if ( (*p) > 43 ) {
 		if ( 97 <= (*p) && (*p) <= 122 )
-			goto tr21;
+			goto tr23;
 	} else if ( (*p) >= 42 )
-		goto tr21;
-	goto tr19;
-tr20:
+		goto tr22;
+	goto tr20;
+tr21:
 #line 8 "parser.rl"
 	{ parser->keyword_preceding_whitespace = p; }
 	goto st1;
@@ -410,7 +410,7 @@ case 1:
 	}
 	if ( (*p) > 43 ) {
 		if ( 97 <= (*p) && (*p) <= 122 )
-			goto tr4;
+			goto tr5;
 	} else if ( (*p) >= 42 )
 		goto tr4;
 	goto tr2;
@@ -418,7 +418,7 @@ tr4:
 #line 7 "parser.rl"
 	{ parser->keyword_start = p; }
 	goto st2;
-tr21:
+tr22:
 #line 8 "parser.rl"
 	{ parser->keyword_preceding_whitespace = p; }
 #line 7 "parser.rl"
@@ -429,61 +429,71 @@ st2:
 		goto _test_eof2;
 case 2:
 #line 432 "parser.c"
-	switch( (*p) ) {
-		case 32: goto tr5;
-		case 33: goto st2;
-		case 36: goto st2;
-		case 38: goto st2;
-		case 61: goto st2;
-		case 64: goto st2;
-		case 94: goto st2;
-	}
-	if ( (*p) > 43 ) {
-		if ( 97 <= (*p) && (*p) <= 122 )
-			goto st2;
-	} else if ( (*p) >= 42 )
-		goto st2;
+	if ( (*p) == 32 )
+		goto tr6;
 	goto tr2;
-tr5:
+tr6:
 #line 11 "parser.rl"
 	{
     parser->keyword_end = p;
     parser->keyword = rb_str_new(parser->keyword_start, (p - parser->keyword_start));
   }
-	goto st9;
-st9:
+	goto st10;
+st10:
 	if ( ++p == pe )
-		goto _test_eof9;
-case 9:
-#line 459 "parser.c"
+		goto _test_eof10;
+case 10:
+#line 447 "parser.c"
 	if ( (*p) == 32 )
-		goto st9;
-	goto tr22;
+		goto st10;
+	goto tr24;
+tr5:
+#line 7 "parser.rl"
+	{ parser->keyword_start = p; }
+	goto st3;
+tr23:
+#line 8 "parser.rl"
+	{ parser->keyword_preceding_whitespace = p; }
+#line 7 "parser.rl"
+	{ parser->keyword_start = p; }
+	goto st3;
+st3:
+	if ( ++p == pe )
+		goto _test_eof3;
+case 3:
+#line 465 "parser.c"
+	if ( (*p) == 32 )
+		goto tr6;
+	if ( 97 <= (*p) && (*p) <= 122 )
+		goto st3;
+	goto tr2;
 	}
-	_test_eof3: cs = 3; goto _test_eof; 
 	_test_eof4: cs = 4; goto _test_eof; 
 	_test_eof5: cs = 5; goto _test_eof; 
-	_test_eof0: cs = 0; goto _test_eof; 
 	_test_eof6: cs = 6; goto _test_eof; 
+	_test_eof0: cs = 0; goto _test_eof; 
 	_test_eof7: cs = 7; goto _test_eof; 
 	_test_eof8: cs = 8; goto _test_eof; 
+	_test_eof9: cs = 9; goto _test_eof; 
 	_test_eof1: cs = 1; goto _test_eof; 
 	_test_eof2: cs = 2; goto _test_eof; 
-	_test_eof9: cs = 9; goto _test_eof; 
+	_test_eof10: cs = 10; goto _test_eof; 
+	_test_eof3: cs = 3; goto _test_eof; 
 
 	_test_eof: {}
 	if ( p == eof )
 	{
 	switch ( cs ) {
-	case 4: goto tr11;
-	case 5: goto tr11;
+	case 5: goto tr12;
+	case 6: goto tr12;
 	case 0: goto tr0;
-	case 6: goto tr11;
-	case 7: goto tr15;
-	case 8: goto tr19;
+	case 7: goto tr12;
+	case 8: goto tr16;
+	case 9: goto tr20;
 	case 1: goto tr2;
 	case 2: goto tr2;
-	case 9: goto tr22;
+	case 10: goto tr24;
+	case 3: goto tr2;
 	}
 	}
 
