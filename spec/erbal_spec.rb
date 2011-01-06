@@ -144,6 +144,10 @@ describe Erbal do
       erbal_parse("1 + 1 is <%= raw 1 + 1 %>", :unsafe_concat_method => 'unsafe_concat', :safe_concat_keyword => nil).should == "@output_buffer = '';@output_buffer.concat(%Q`1 + 1 is `);@output_buffer.unsafe_concat(%Q`\#{ raw 1 + 1 }`);@output_buffer"
     end
 
+    it "should allow some non a-z characters as part of the safe_concat_keyword" do
+      erbal_parse("<%=!@$*=^&+ 1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => '!@$*=^&+').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{ 1 + 1 }`);@output_buffer"
+    end
+
     it "should preserve the whitespace following the safe_concat_keyword" do
       erbal_parse("<%= raw   1 + 1 %>", :safe_concat_method => 'safe_concat', :safe_concat_keyword => 'raw').should == "@output_buffer = '';@output_buffer.safe_concat(%Q`\#{   1 + 1 }`);@output_buffer"
     end

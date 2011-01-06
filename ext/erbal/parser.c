@@ -375,9 +375,19 @@ st8:
 		goto _test_eof8;
 case 8:
 #line 378 "parser.c"
-	if ( (*p) == 32 )
-		goto tr20;
-	if ( 97 <= (*p) && (*p) <= 122 )
+	switch( (*p) ) {
+		case 32: goto tr20;
+		case 33: goto tr21;
+		case 36: goto tr21;
+		case 38: goto tr21;
+		case 61: goto tr21;
+		case 64: goto tr21;
+		case 94: goto tr21;
+	}
+	if ( (*p) > 43 ) {
+		if ( 97 <= (*p) && (*p) <= 122 )
+			goto tr21;
+	} else if ( (*p) >= 42 )
 		goto tr21;
 	goto tr19;
 tr20:
@@ -388,10 +398,20 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 392 "parser.c"
-	if ( (*p) == 32 )
-		goto st1;
-	if ( 97 <= (*p) && (*p) <= 122 )
+#line 402 "parser.c"
+	switch( (*p) ) {
+		case 32: goto st1;
+		case 33: goto tr4;
+		case 36: goto tr4;
+		case 38: goto tr4;
+		case 61: goto tr4;
+		case 64: goto tr4;
+		case 94: goto tr4;
+	}
+	if ( (*p) > 43 ) {
+		if ( 97 <= (*p) && (*p) <= 122 )
+			goto tr4;
+	} else if ( (*p) >= 42 )
 		goto tr4;
 	goto tr2;
 tr4:
@@ -408,10 +428,20 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 412 "parser.c"
-	if ( (*p) == 32 )
-		goto tr5;
-	if ( 97 <= (*p) && (*p) <= 122 )
+#line 432 "parser.c"
+	switch( (*p) ) {
+		case 32: goto tr5;
+		case 33: goto st2;
+		case 36: goto st2;
+		case 38: goto st2;
+		case 61: goto st2;
+		case 64: goto st2;
+		case 94: goto st2;
+	}
+	if ( (*p) > 43 ) {
+		if ( 97 <= (*p) && (*p) <= 122 )
+			goto st2;
+	} else if ( (*p) >= 42 )
 		goto st2;
 	goto tr2;
 tr5:
@@ -425,7 +455,7 @@ st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-#line 429 "parser.c"
+#line 459 "parser.c"
 	if ( (*p) == 32 )
 		goto st9;
 	goto tr22;

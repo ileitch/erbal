@@ -24,7 +24,7 @@
 
     '<%=' (
             [ ]* >keyword_preceding_whitespace
-            [a-z]+ >keyword_start %keyword_end
+            [a-z!@$*=^&+]+ >keyword_start %keyword_end
             [ ]+ %keyword_trailing_whitespace
           ) => { erbal_parser_tag_open_choose_concat(parser); };
   *|;
