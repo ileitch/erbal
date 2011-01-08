@@ -65,6 +65,12 @@ VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
   rb_erbal_setup_option(self, parser, &parser->unsafe_concat_method, "unsafe_concat_method", "concat");
   rb_erbal_setup_option(self, parser, &parser->safe_concat_keyword, "safe_concat_keyword", "");
 
+	if (strcmp(RSTRING(parser->safe_concat_method)->ptr, RSTRING(parser->unsafe_concat_method)->ptr) == 0) {
+    parser->concat_methods_identical = 1;
+	} else {
+	  parser->concat_methods_identical = 0;
+	}
+
   return self;
 }
 

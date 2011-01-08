@@ -233,12 +233,6 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
   parser->state->concat = OUTSIDE_CONCAT;
 	parser->state->tag = OUTSIDE_TAG;
 
-	if (strcmp(RSTRING(parser->safe_concat_method)->ptr, RSTRING(parser->unsafe_concat_method)->ptr) == 0) {
-    parser->concat_methods_identical = 1;
-	} else {
-	  parser->concat_methods_identical = 0;
-	}
-
   parser->src = rb_str_dup(parser->buffer_name);
 
   VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
