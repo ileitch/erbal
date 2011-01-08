@@ -67,7 +67,7 @@ Erubis: 2.6.6
 
 Erbal: 1.1
 
-  => Parsing Benchmark
+<b>Parsing Benchmark</b>
 
   => Erb
   0.851 0.853 0.848 0.847 0.849 0.847
@@ -85,7 +85,7 @@ Erbal: 1.1
   0.036 0.039 0.066 0.038 0.067 0.039
   => Average: 0.047
 
-  => eval() Benchmark
+<b>eval() Benchmark</b>
 
   => Erb
   0.203 0.192 0.180 0.180 0.179 0.191
