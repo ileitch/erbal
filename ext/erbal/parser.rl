@@ -232,19 +232,7 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
   parser->state->chars_seen = 0;
   parser->state->concat = OUTSIDE_CONCAT;
 	parser->state->tag = OUTSIDE_TAG;
-
-  parser->src = rb_str_dup(parser->buffer_name);
-
-  VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
-
-  if (!NIL_P(buffer_init_val)) {
-    Check_Type(buffer_init_val, T_STRING);
-    rb_str_buf_cat(parser->src, " = ", 3);
-    rb_str_concat(parser->src, buffer_init_val);
-    rb_str_buf_cat(parser->src, ";", 1);
-  } else {
-    rb_str_buf_cat(parser->src, " = '';", 6);
-  }
+  parser->src = rb_str_dup(parser->initial_src);
 
   %% write init;
 }

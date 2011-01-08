@@ -218,22 +218,10 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
   parser->state->chars_seen = 0;
   parser->state->concat = OUTSIDE_CONCAT;
 	parser->state->tag = OUTSIDE_TAG;
-
-  parser->src = rb_str_dup(parser->buffer_name);
-
-  VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
-
-  if (!NIL_P(buffer_init_val)) {
-    Check_Type(buffer_init_val, T_STRING);
-    rb_str_buf_cat(parser->src, " = ", 3);
-    rb_str_concat(parser->src, buffer_init_val);
-    rb_str_buf_cat(parser->src, ";", 1);
-  } else {
-    rb_str_buf_cat(parser->src, " = '';", 6);
-  }
+  parser->src = rb_str_dup(parser->initial_src);
 
   
-#line 237 "parser.c"
+#line 225 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -241,14 +229,14 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 250 "parser.rl"
+#line 238 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 252 "parser.c"
+#line 240 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -308,7 +296,7 @@ st4:
 case 4:
 #line 1 "NONE"
 	{ts = p;}
-#line 312 "parser.c"
+#line 300 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st5;
 		case 45: goto tr10;
@@ -330,7 +318,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 334 "parser.c"
+#line 322 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr12;
@@ -366,7 +354,7 @@ st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-#line 370 "parser.c"
+#line 358 "parser.c"
 	switch( (*p) ) {
 		case 32: goto tr21;
 		case 33: goto tr22;
@@ -390,7 +378,7 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 394 "parser.c"
+#line 382 "parser.c"
 	switch( (*p) ) {
 		case 32: goto st1;
 		case 33: goto tr4;
@@ -420,7 +408,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 424 "parser.c"
+#line 412 "parser.c"
 	if ( (*p) == 32 )
 		goto tr6;
 	goto tr2;
@@ -435,7 +423,7 @@ st10:
 	if ( ++p == pe )
 		goto _test_eof10;
 case 10:
-#line 439 "parser.c"
+#line 427 "parser.c"
 	if ( (*p) == 32 )
 		goto st10;
 	goto tr24;
@@ -453,7 +441,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 457 "parser.c"
+#line 445 "parser.c"
 	if ( (*p) == 32 )
 		goto tr6;
 	if ( 97 <= (*p) && (*p) <= 122 )
@@ -491,6 +479,6 @@ case 3:
 
 	}
 
-#line 256 "parser.rl"
+#line 244 "parser.rl"
   erbal_parser_finish(parser);
 }

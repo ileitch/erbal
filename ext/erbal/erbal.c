@@ -10,6 +10,7 @@ void rb_erbal_free(erbal_parser *parser) {
 void rb_erbal_mark(erbal_parser *parser) {
   rb_gc_mark_maybe(parser->str);
   rb_gc_mark_maybe(parser->src);
+  rb_gc_mark_maybe(parser->initial_src);
   rb_gc_mark_maybe(parser->buffer_name);
   rb_gc_mark_maybe(parser->options);
   rb_gc_mark_maybe(parser->safe_concat_method);
@@ -70,6 +71,19 @@ VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
 	} else {
 	  parser->concat_methods_identical = 0;
 	}
+
+  parser->initial_src = rb_str_dup(parser->buffer_name);
+
+  VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
+  
+  if (!NIL_P(buffer_init_val)) {
+    Check_Type(buffer_init_val, T_STRING);
+    rb_str_buf_cat(parser->initial_src, " = ", 3);
+    rb_str_concat(parser->initial_src, buffer_init_val);
+    rb_str_buf_cat(parser->initial_src, ";", 1);
+  } else {
+    rb_str_buf_cat(parser->initial_src, " = '';", 6);
+  }
 
   return self;
 }

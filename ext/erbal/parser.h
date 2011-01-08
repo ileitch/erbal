@@ -13,7 +13,7 @@ typedef struct parser_state {
 typedef struct erbal_parser {
   parser_state *state;
   unsigned int debug, concat_methods_identical;
-  VALUE str, src, buffer_name, options, safe_concat_method, unsafe_concat_method, keyword, safe_concat_keyword;
+  VALUE str, src, initial_src, buffer_name, options, safe_concat_method, unsafe_concat_method, keyword, safe_concat_keyword;
   char *keyword_start, *keyword_end, *keyword_trailing_whitespace, *keyword_preceding_whitespace;
 } erbal_parser;
 
