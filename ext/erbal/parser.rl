@@ -241,8 +241,6 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
 
   parser->src = rb_str_dup(parser->buffer_name);
 
-  rb_iv_set(self, "@src", parser->src);
-
   VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
 
   if (!NIL_P(buffer_init_val)) {

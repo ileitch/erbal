@@ -227,8 +227,6 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
 
   parser->src = rb_str_dup(parser->buffer_name);
 
-  rb_iv_set(self, "@src", parser->src);
-
   VALUE buffer_init_val = rb_hash_aref(parser->options, ID2SYM(rb_intern("buffer_initial_value")));
 
   if (!NIL_P(buffer_init_val)) {
@@ -241,7 +239,7 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
   }
 
   
-#line 245 "parser.c"
+#line 243 "parser.c"
 	{
 	cs = erbal_parser_start;
 	ts = 0;
@@ -249,14 +247,14 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
 	act = 0;
 	}
 
-#line 258 "parser.rl"
+#line 256 "parser.rl"
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
   p = RSTRING(parser->str)->ptr;
   pe = p + strlen(p);
   
-#line 260 "parser.c"
+#line 258 "parser.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -316,7 +314,7 @@ st4:
 case 4:
 #line 1 "NONE"
 	{ts = p;}
-#line 320 "parser.c"
+#line 318 "parser.c"
 	switch( (*p) ) {
 		case 37: goto st5;
 		case 45: goto tr10;
@@ -338,7 +336,7 @@ st6:
 	if ( ++p == pe )
 		goto _test_eof6;
 case 6:
-#line 342 "parser.c"
+#line 340 "parser.c"
 	if ( (*p) == 37 )
 		goto st0;
 	goto tr12;
@@ -374,7 +372,7 @@ st9:
 	if ( ++p == pe )
 		goto _test_eof9;
 case 9:
-#line 378 "parser.c"
+#line 376 "parser.c"
 	switch( (*p) ) {
 		case 32: goto tr21;
 		case 33: goto tr22;
@@ -398,7 +396,7 @@ st1:
 	if ( ++p == pe )
 		goto _test_eof1;
 case 1:
-#line 402 "parser.c"
+#line 400 "parser.c"
 	switch( (*p) ) {
 		case 32: goto st1;
 		case 33: goto tr4;
@@ -428,7 +426,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 432 "parser.c"
+#line 430 "parser.c"
 	if ( (*p) == 32 )
 		goto tr6;
 	goto tr2;
@@ -443,7 +441,7 @@ st10:
 	if ( ++p == pe )
 		goto _test_eof10;
 case 10:
-#line 447 "parser.c"
+#line 445 "parser.c"
 	if ( (*p) == 32 )
 		goto st10;
 	goto tr24;
@@ -461,7 +459,7 @@ st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 465 "parser.c"
+#line 463 "parser.c"
 	if ( (*p) == 32 )
 		goto tr6;
 	if ( 97 <= (*p) && (*p) <= 122 )
@@ -499,6 +497,6 @@ case 3:
 
 	}
 
-#line 264 "parser.rl"
+#line 262 "parser.rl"
   erbal_parser_finish(parser);
 }

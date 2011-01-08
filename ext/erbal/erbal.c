@@ -7,11 +7,21 @@ void rb_erbal_free(erbal_parser *parser) {
   free(parser->state);
   free(parser);
 }
+void rb_erbal_mark(erbal_parser *parser) {
+  rb_gc_mark_maybe(parser->str);
+  rb_gc_mark_maybe(parser->src);
+  rb_gc_mark_maybe(parser->buffer_name);
+  rb_gc_mark_maybe(parser->options);
+  rb_gc_mark_maybe(parser->safe_concat_method);
+  rb_gc_mark_maybe(parser->unsafe_concat_method);
+  rb_gc_mark_maybe(parser->keyword);
+  rb_gc_mark_maybe(parser->safe_concat_keyword);
+}
 
 VALUE rb_erbal_alloc(VALUE klass) {
   erbal_parser *parser = ALLOC(erbal_parser);
   parser->state = ALLOC(parser_state);
-  VALUE obj = Data_Wrap_Struct(klass, 0, rb_erbal_free, parser);
+  VALUE obj = Data_Wrap_Struct(klass, rb_erbal_mark, rb_erbal_free, parser);
   return obj;
 }
 
@@ -24,10 +34,6 @@ void rb_erbal_setup_option(VALUE self, erbal_parser* parser, VALUE* parser_optio
   } else {
     *(parser_option) = rb_str_new2(default_value);
   }
-
-  VALUE ivar = rb_str_new2("@");
-  ivar = rb_str_cat2(ivar, key);
-  rb_iv_set(self, RSTRING(ivar)->ptr, *(parser_option));
 }
 
 VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
@@ -47,8 +53,6 @@ VALUE rb_erbal_initialize(int argc, VALUE *argv, VALUE self) {
     Check_Type(options, T_HASH);
     parser->options = options;
   }
-
-  rb_iv_set(self, "@options", parser->options);
 
   if (rb_hash_aref(parser->options, ID2SYM(rb_intern("debug"))) == Qtrue) {
     parser->debug = 1;
