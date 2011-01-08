@@ -32,7 +32,7 @@ Create the file 'config/initializers/erbal.rb' containing:
 
   require 'erbal/rails'
 
-=== Rails 2.3 + rails_xss
+=== Rails 2.3 + rails_xss (https://github.com/rails/rails_xss)
 
 If you're using the rails_xss plugin, use this in your initialiser instead:
 
@@ -41,8 +41,13 @@ If you're using the rails_xss plugin, use this in your initialiser instead:
   class ErbalTemplateHandler < ActionView::TemplateHandler
     include ActionView::TemplateHandlers::Compilable
     def compile(template)
-      ::Erbal.new("<% __in_erb_template=true %>#{template.source}", {:buffer => '@output_buffer', :buffer_initial_value => 'ActiveSupport::SafeBuffer.new',
-        :safe_concat_method => 'safe_concat', :unsafe_concat_method => 'concat', :safe_concat_keyword => 'raw'}).parse
+      ::Erbal.new("<% __in_erb_template=true %>#{template.source}",
+        {:buffer => '@output_buffer',
+         :buffer_initial_value => 'ActiveSupport::SafeBuffer.new',
+         :safe_concat_method => 'safe_concat',
+         :unsafe_concat_method => 'concat',
+         :safe_concat_keyword => 'raw'}
+      ).parse
     end
   end
 
