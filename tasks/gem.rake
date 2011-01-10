@@ -2,7 +2,7 @@ require 'rake/gempackagetask'
 require 'yaml'
 
 WIN_SUFFIX = ENV['WIN_SUFFIX'] || 'i386-mswin32'
-ERBAL_VERSION = '1.2.rc3'
+ERBAL_VERSION = '1.2.rc5'
 
 task :clean => :clobber_package
 

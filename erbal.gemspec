@@ -1,13 +1,13 @@
 --- !ruby/object:Gem::Specification 
 name: erbal
 version: !ruby/object:Gem::Version 
-  hash: 977940508
+  hash: 977940506
   prerelease: true
   segments: 
   - 1
   - 2
-  - rc3
-  version: 1.2.rc3
+  - rc5
+  version: 1.2.rc5
 platform: ruby
 authors: 
 - Ian Leitch
@@ -15,7 +15,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2011-01-08 00:00:00 +11:00
+date: 2011-01-10 00:00:00 +11:00
 default_executable: 
 dependencies: []
 
