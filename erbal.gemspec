@@ -1,13 +1,12 @@
 --- !ruby/object:Gem::Specification 
 name: erbal
 version: !ruby/object:Gem::Version 
-  hash: 977940506
-  prerelease: true
+  hash: 11
+  prerelease: false
   segments: 
   - 1
   - 2
-  - rc5
-  version: 1.2.rc5
+  version: "1.2"
 platform: ruby
 authors: 
 - Ian Leitch
@@ -15,7 +14,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2011-01-10 00:00:00 +11:00
+date: 2011-01-11 00:00:00 +11:00
 default_executable: 
 dependencies: []
 
@@ -68,14 +67,12 @@ required_ruby_version: !ruby/object:Gem::Requirement
 required_rubygems_version: !ruby/object:Gem::Requirement 
   none: false
   requirements: 
-  - - ">"
+  - - ">="
     - !ruby/object:Gem::Version 
-      hash: 25
+      hash: 3
       segments: 
-      - 1
-      - 3
-      - 1
-      version: 1.3.1
+      - 0
+      version: "0"
 requirements: []
 
 rubyforge_project: 
