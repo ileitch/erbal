@@ -45,7 +45,7 @@ inline void erbal_parser_tag_open_with_dash(erbal_parser *parser) {
 }
 
 inline void erbal_parser_tag_open_choose_concat(erbal_parser *parser) {
-  if (strcmp(RSTRING(parser->safe_concat_keyword)->ptr, "") == 0 || strcmp(RSTRING(parser->keyword)->ptr, RSTRING(parser->safe_concat_keyword)->ptr) != 0) {
+  if (strcmp(RSTRING_PTR(parser->safe_concat_keyword), "") == 0 || strcmp(RSTRING_PTR(parser->keyword), RSTRING_PTR(parser->safe_concat_keyword)) != 0) {
     /* Keyword doesn't match, reset the buffer to the start of the expression match and act as if a keyword wasn't seen. */
     p = parser->keyword_preceding_whitespace - 1;
     erbal_parser_tag_open_for_unsafe_concat(parser);
@@ -123,7 +123,7 @@ inline void erbal_parser_tag_close(erbal_parser *parser) {
 
 inline VALUE erbal_escape_special_chars(erbal_parser *parser) {
   VALUE buf = rb_str_buf_new(0);
-  int i, n, slashes_seen = 0;
+  unsigned int i, n, slashes_seen = 0;
   char *current_char;
 
   for (i = 0; i < parser->state->chars_seen; i++) {
@@ -210,7 +210,7 @@ inline void erbal_parser_finish(erbal_parser *parser) {
   rb_str_concat(parser->src, parser->buffer_name);
 
   if (parser->debug) {
-    printf("ERBAL DEBUG: %s\n", RSTRING(rb_inspect(parser->src))->ptr);
+    printf("ERBAL DEBUG: %s\n", RSTRING_PTR(rb_inspect(parser->src)));
   }
 }
 
@@ -233,7 +233,7 @@ void erbal_parser_init(VALUE self, erbal_parser *parser) {
 }
 
 void erbal_parser_exec(erbal_parser *parser) {
-  p = RSTRING(parser->str)->ptr;
+  p = RSTRING_PTR(parser->str);
   pe = p + strlen(p);
   
 #line 240 "parser.c"
